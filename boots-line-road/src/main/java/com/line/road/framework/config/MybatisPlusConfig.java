@@ -9,6 +9,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.line.road.framework.config.properties.DruidConfig;
 
+/**
+ * mybatis配置
+ * 
+ * @author zhaoliangliang
+ * @since 2018-04-24 14:07
+ */
 @Configuration
 @EnableTransactionManagement
 // 无配置文件注解版
@@ -16,7 +22,7 @@ import com.line.road.framework.config.properties.DruidConfig;
 public class MybatisPlusConfig {
 
 	@Autowired
-	DruidConfig druidConfig;
+	private DruidConfig druidConfig;
 
 	/**
 	 * 默认数据源

@@ -3,7 +3,7 @@ package com.line.road.modular.persistence.model;
 /**
  * 部门对象 sys_dept
  * 
- * @author ruoyi
+ * @author zhaoliangliang
  */
 public class Dept
 {
