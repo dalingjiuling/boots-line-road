@@ -15,10 +15,11 @@ import com.line.road.framework.config.properties.DruidConfig;
  * @author zhaoliangliang
  * @since 2018-04-24 14:07
  */
-@Configuration
-@EnableTransactionManagement
+//@Configuration
+//@EnableConfigurationProperties(DruidConfig.class)
+//@EnableTransactionManagement
 // 无配置文件注解版
-@MapperScan(basePackages = { "com.line.road.modular.persistence.dao" })
+//@MapperScan(basePackages = { "com.line.road.modular.persistence.dao" })
 public class MybatisPlusConfig {
 
 	@Autowired

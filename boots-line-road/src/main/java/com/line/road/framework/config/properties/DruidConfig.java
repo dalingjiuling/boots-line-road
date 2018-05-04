@@ -19,8 +19,8 @@ import com.alibaba.druid.pool.DruidDataSource;
  * @since 2018-04-24 14:07
  */
 
-@Component
-@ConfigurationProperties(prefix = "spring.datasource")
+//@Component
+//@ConfigurationProperties(prefix = "spring.datasource")
 public class DruidConfig {
 
 	private String url = "jdbc:mysql://127.0.0.1:3306/ry?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull";

@@ -11,17 +11,18 @@ import com.github.pagehelper.PageInfo;
 import com.line.road.framework.web.controller.BaseController;
 import com.line.road.modular.persistence.dao.IUserDao;
 import com.line.road.modular.persistence.model.User;
+import com.line.road.modular.system.service.IUserService;
 
 @Controller
 public class IndexController extends BaseController {
 
 	@Autowired
-	private IUserDao iUserDao;
+	private IUserService iUserService;
 
 	@RequestMapping("/")
 	@ResponseBody
 	public String index() {
-		User u = iUserDao.selectUserById(1l);
+		User u = iUserService.selectUserById(1l);
 		System.out.println(u.toString());
 		return "hello world!";
 	}
@@ -30,7 +31,7 @@ public class IndexController extends BaseController {
 	@ResponseBody
 	public PageInfo<User> test(User user) {
 		setPageInfo(user);
-		List<User> userInfoList = iUserDao.selectUserAll(user);
+		List<User> userInfoList = iUserService.selectUserAll(user);
 		return getPage(userInfoList);
 	}
 }
