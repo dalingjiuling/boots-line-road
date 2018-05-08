@@ -22,5 +22,8 @@ public interface IUserDao {
 	 * @return
 	 */
 	public List<User> selectUserAll(User user);
+	
+	
+	public int insertUser(User user);
 
 }

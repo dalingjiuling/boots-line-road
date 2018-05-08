@@ -9,4 +9,6 @@ public interface IUserService {
 	public List<User> selectUserAll(User user);
 	
 	public User selectUserById(Long userId);
+	
+	public int insertUser(User user);
 }

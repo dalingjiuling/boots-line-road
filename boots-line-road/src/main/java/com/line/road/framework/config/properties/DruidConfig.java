@@ -2,8 +2,8 @@ package com.line.road.framework.config.properties;
 
 import java.sql.SQLException;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+// import org.springframework.boot.context.properties.ConfigurationProperties;
+// import org.springframework.stereotype.Component;
 
 import com.alibaba.druid.pool.DruidDataSource;
 

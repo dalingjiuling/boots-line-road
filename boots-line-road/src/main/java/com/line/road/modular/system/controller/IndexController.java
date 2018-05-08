@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.github.pagehelper.PageInfo;
 import com.line.road.framework.web.controller.BaseController;
-import com.line.road.modular.persistence.dao.IUserDao;
 import com.line.road.modular.persistence.model.User;
 import com.line.road.modular.system.service.IUserService;
 
@@ -33,5 +32,13 @@ public class IndexController extends BaseController {
 		setPageInfo(user);
 		List<User> userInfoList = iUserService.selectUserAll(user);
 		return getPage(userInfoList);
+	}
+	
+	@RequestMapping("/insert")
+	@ResponseBody
+	public String insert() {
+		User user =new User();
+		int u = iUserService.insertUser(user);
+		return u+"   hello world!";
 	}
 }
