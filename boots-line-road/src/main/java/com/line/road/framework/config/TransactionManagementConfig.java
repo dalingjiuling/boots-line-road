@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.TransactionManagementConfigure
  * @author zhaolianglinag
  * @since 2018-04-26 10:26
  */
-@Configuration
-@EnableTransactionManagement
+// @Configuration
+// @EnableTransactionManagement
 public class TransactionManagementConfig implements TransactionManagementConfigurer {
 
 	@Autowired

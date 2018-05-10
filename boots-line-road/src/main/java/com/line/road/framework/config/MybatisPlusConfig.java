@@ -9,20 +9,9 @@ import org.springframework.context.annotation.Configuration;
  * @author zhaoliangliang
  * @since 2018-04-24 14:07
  */
-@Configuration
+// @Configuration
 // 无配置文件注解版
-@MapperScan(basePackages = { "com.line.road.modular.persistence.dao" })
+// @MapperScan(basePackages = { "com.line.road.modular.persistence.dao" })
 public class MybatisPlusConfig {
 
-	// @Primary
-	// @Bean
-	// @ConfigurationProperties("spring.datasource.druid.one")
-	// public DataSource dataSourceOne(){
-	// return DruidDataSourceBuilder.create().build();
-	// }
-	// @Bean
-	// @ConfigurationProperties("spring.datasource.druid.two")
-	// public DataSource dataSourceTwo(){
-	// return DruidDataSourceBuilder.create().build();
-	// }
 }

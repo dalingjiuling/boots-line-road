@@ -14,6 +14,6 @@ public class BootsLineRoadApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BootsLineRoadApplication.class, args);
-		LOGGER.info("(♥◠‿◠)ﾉﾞ  启动成功   ლ(´ڡ`ლ)ﾞ ");
+		LOGGER.info("************ 启动成功  ************");
 	}
 }

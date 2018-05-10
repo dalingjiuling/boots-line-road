@@ -1,20 +1,11 @@
 # 项目端口
 server:
-  port: 8080
+  port: 8090
 
 # 通用环境
 spring:
   profiles:
-    active: dev
-    
-# Mybatis配置
-mybatis:
-  # 搜索指定包别名
-  type-aliases-package: com.line.road.modular.persistence.model
-  # 配置mapp的扫描，找打所有的*Mapper.xml映射文件
-  mapper-locations: classpath:/mybatis/system/*.xml
-  # 加载全局的配置文件
-  config-location: classpath:/mybatis/mybatis-config.xml
+    active: multi-dev
   
 # PageHelper分页插件
 pagehelper: 
@@ -34,16 +25,39 @@ pagehelper:
 #    not-empty: true
 #    identity: MYSQL
 
-# ---来作为分隔符.第一部分通用配置部分，表示三个环境都通用的属性， 后面三段分别为：开发，测试，生产，用spring.profiles指定了一个值(开发为dev，测试为test，生产为prod)，这个值表示该段配置应该用在哪个profile里面。
+# "---"来作为分隔符.第一部分通用配置部分，表示三个环境都通用的属性， 后面三段分别为：开发，测试，生产，用spring.profiles指定了一个值(开发为dev，测试为test，生产为prod)，这个值表示该段配置应该用在哪个profile里面。
 ---
 # development environment
 spring:
   profiles: dev
+  
+# Mybatis配置
+mybatis:
+  # 搜索指定包别名
+  type-aliases-package: com.line.road.modular.persistence.primary.model
+  # 配置mapp的扫描，找打所有的*Mapper.xml映射文件
+  mapper-locations: classpath:/mybatis/system/*.xml
+  # 加载全局的配置文件
+  config-location: classpath:/mybatis/mybatis-config.xml
 ---
 #test environment
 spring:
   profiles: test
+  
+mybatis:
+  type-aliases-package: com.line.road.modular.persistence.primary.model
+  mapper-locations: classpath:/mybatis/system/*.xml
+  config-location: classpath:/mybatis/mybatis-config.xml
 --- 
 #production environment
 spring:
   profiles: prod
+
+mybatis:
+  type-aliases-package: com.line.road.modular.persistence.primary.model
+  mapper-locations: classpath:/mybatis/system/*.xml
+  config-location: classpath:/mybatis/mybatis-config.xml
+---
+#multi dataSource dev environment
+spring:
+  profiles: multi-dev

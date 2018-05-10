@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.github.pagehelper.PageInfo;
 import com.line.road.framework.web.controller.BaseController;
-import com.line.road.modular.persistence.model.User;
+import com.line.road.modular.persistence.primary.model.User;
+import com.line.road.modular.persistence.secondary.model.Person;
 import com.line.road.modular.system.service.IUserService;
 
 @Controller
@@ -31,6 +32,14 @@ public class IndexController extends BaseController {
 	public PageInfo<User> test(User user) {
 		setPageInfo(user);
 		List<User> userInfoList = iUserService.selectUserAll(user);
+		return getPage(userInfoList);
+	}
+	
+	@RequestMapping("/test1")
+	@ResponseBody
+	public PageInfo<Person> test1(Person person) {
+		setPageInfo(person);
+		List<Person> userInfoList = iUserService.selectPersonAll(person);
 		return getPage(userInfoList);
 	}
 	

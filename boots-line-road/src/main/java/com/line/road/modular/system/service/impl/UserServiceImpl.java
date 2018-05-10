@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.line.road.modular.persistence.dao.IUserDao;
-import com.line.road.modular.persistence.model.User;
+
+import com.line.road.modular.persistence.primary.dao.IUserDao;
+import com.line.road.modular.persistence.primary.model.User;
+import com.line.road.modular.persistence.secondary.dao.ISecUserDao;
+import com.line.road.modular.persistence.secondary.model.Person;
 import com.line.road.modular.system.service.IUserService;
 
 @Service
@@ -18,6 +21,9 @@ public class UserServiceImpl implements IUserService {
 
 	@Autowired
 	private IUserDao iUserDao;
+	
+	@Autowired
+	private ISecUserDao iSecUserDao;
 
 	@Override
 	public List<User> selectUserAll(User user) {
@@ -37,8 +43,13 @@ public class UserServiceImpl implements IUserService {
 		user.setUpdateTime(new SimpleDateFormat("yyyyy-MM-dd HH:dd:ss").format(new Date()));
 		user.setCreateTime(new SimpleDateFormat("yyyyy-MM-dd HH:dd:ss").format(new Date()));
 		int count = iUserDao.insertUser(user);
-		//int a = 0 / 0;
+		// int a = 0 / 0;
 		return count;
+	}
+
+	@Override
+	public List<Person> selectPersonAll(Person user) {
+		return iSecUserDao.selectUserAll(user);
 	}
 
 }
