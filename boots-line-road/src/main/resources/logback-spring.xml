@@ -26,11 +26,13 @@
 	    </encoder>  
 	</appender>
 	
+	<logger name="org.springframework" level="warn"/>
+	<logger name="org.mybatis.spring" level="warn"/>
+    <logger name="druid.sql.Statement" level="debug"/>
+    <logger name="com.line.road" level="info"/>
+    
 	<root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>
-    
-    <logger name="com.line.road" level="info"/>
-    
 </configuration>

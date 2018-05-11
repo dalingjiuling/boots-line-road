@@ -2,8 +2,6 @@ package com.line.road.modular.persistence.secondary.model;
 
 import java.util.Arrays;
 
-import javax.persistence.Table;
-
 import com.line.road.framework.web.page.PageDomain;
 
 /**
@@ -11,7 +9,6 @@ import com.line.road.framework.web.page.PageDomain;
  * 
  * @author zhaoliangliang
  */
-@Table(name = "sys_user")
 public class Person extends PageDomain {
 	/** 用户ID */
 	private Long userId;

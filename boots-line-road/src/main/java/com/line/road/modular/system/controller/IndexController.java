@@ -2,6 +2,8 @@ package com.line.road.modular.system.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,8 @@ import com.line.road.modular.system.service.IUserService;
 @Controller
 public class IndexController extends BaseController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
+
 	@Autowired
 	private IUserService iUserService;
 
@@ -29,12 +33,25 @@ public class IndexController extends BaseController {
 
 	@RequestMapping("/test")
 	@ResponseBody
-	public PageInfo<User> test(User user) {
-		setPageInfo(user);
+	public List<User> test(User user) {
+		// setPageInfo(user);
 		List<User> userInfoList = iUserService.selectUserAll(user);
-		return getPage(userInfoList);
+		LOGGER.info("userInfoList[{}]", userInfoList == null ? 0 : userInfoList.size());
+		Person person = new Person();
+		person.setPageNum(user.getPageNum());
+		person.setPageSize(user.getPageSize());
+		List<Person> perList = iUserService.selectPersonAll(person);
+		LOGGER.info("perList[{}]", perList == null ? 0 : perList.size());
+		return userInfoList;
 	}
-	
+
+	@RequestMapping("/test2")
+	@ResponseBody
+	public List<User> test2(User user) {
+		List<User> userInfoList = iUserService.selectUserAll(user);
+		return userInfoList;
+	}
+
 	@RequestMapping("/test1")
 	@ResponseBody
 	public PageInfo<Person> test1(Person person) {
@@ -42,12 +59,12 @@ public class IndexController extends BaseController {
 		List<Person> userInfoList = iUserService.selectPersonAll(person);
 		return getPage(userInfoList);
 	}
-	
+
 	@RequestMapping("/insert")
 	@ResponseBody
 	public String insert() {
-		User user =new User();
+		User user = new User();
 		int u = iUserService.insertUser(user);
-		return u+"   hello world!";
+		return u + "   hello world!";
 	}
 }
