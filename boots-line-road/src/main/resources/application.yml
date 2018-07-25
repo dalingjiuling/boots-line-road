@@ -6,7 +6,13 @@ server:
 spring:
   profiles:
     active: multi-dev
-  
+  dubbo: 
+    application:            #应用配置，用于配置当前应用信息，不管该应用是提供者还是消费者。
+      name: boots-line-road
+    server: false
+    registry:                 #注册中心配置，用于配置连接注册中心相关信息。
+      address: N/A
+      
 # PageHelper分页插件
 pagehelper: 
   # 指定分页插件使用哪种方言

@@ -3,7 +3,8 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.line.road.modular.persistence.primary.dao.IUserDao">
-
+	<cache type="com.line.road.framework.cache.MybatisRedisCache"/>
+	
 	<resultMap type="User" id="UserResult">
 		<id     property="userId"       column="user_id"      />
 		<result property="deptId"       column="dept_id"      />

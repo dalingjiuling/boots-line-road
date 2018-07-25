@@ -3,7 +3,6 @@ mybatis:
   one:  
     type-aliases-package: com.line.road.modular.persistence.primary.model
     mapper-locations: classpath:/mybatis/system/*.xml
-    config-location: classpath:/mybatis/mybatis-config.xml
   two:
     type-aliases-package: com.line.road.modular.persistence.secondary.model
     mapper-locations: classpath:/mybatis-sec/*.xml
