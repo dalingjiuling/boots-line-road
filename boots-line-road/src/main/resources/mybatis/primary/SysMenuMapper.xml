@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.line.road.modular.persistence.primary.dao.SysMenuDao">
+	<!-- <cache type="com.line.road.framework.cache.MybatisRedisCache"/> -->
+	
+	<resultMap type="SysMenu" id="BaseResult">
+		<id     property="menuId"       column="menu_id"/>
+		<result property="dataUrl"      column="data_url"/>
+		<result property="menuClass"    column="menu_class"/>
+		<result property="menuName"     column="menu_name"/>
+		<result property="menuPrantId"  column="menu_prant_id"/>
+		<result property="sequence"     column="sequence"/>
+		<result property="menuType"     column="menu_type"/>
+		<result property="menuState"    column="menu_state"/>
+		<result property="menuIcon"     column="menu_icon"/>
+		<result property="createTime"   column="create_time"/>
+		<result property="modifyTime"   column="modify_time"/>
+		<result property="createUser"   column="create_user"/>
+		<result property="modifyUser"   column="modify_user"/>
+		<collection property="subMenu" ofType="SysMenu">
+			<id     property="menuId"       column="menuId"/>
+			<result property="dataUrl"      column="dataUrl"/>
+			<result property="menuClass"    column="menuClass"/>
+			<result property="menuName"     column="menuName"/>
+			<result property="menuPrantId"  column="menuPrantId"/>
+			<result property="sequence"     column="subSequence"/>
+			<result property="menuType"     column="menuType"/>
+			<result property="menuState"    column="subState"/>
+			<result property="menuIcon"     column="menuIcon"/>
+			<result property="createTime"   column="createTime"/>
+			<result property="modifyTime"   column="modifyTime"/>
+			<result property="createUser"   column="createUser"/>
+			<result property="modifyUser"   column="modifyUser"/>
+		</collection>
+	</resultMap>
+
+	<sql id="subColumn">
+		c.menu_id as menuId, c.data_url as dataUrl, c.menu_class as menuClass, c.menu_name as menuName,
+		c.menu_prant_id as menuPrantId, c.sequence as subSequence, c.menu_type as menuType, c.menu_state as subState,
+		c.menu_icon as menuIcon, c.create_time as createTime, c.modify_time as modifyTime, c.create_user as createUser,
+		c.modify_user as modifyUser
+	</sql>
+	<!-- 查询左侧菜单 -->
+	<select id="getLeftMenuList" resultMap="BaseResult">
+		select p.*,<include refid="subColumn"/> from sys_menu p left join sys_menu c on p.menu_id=c.menu_prant_id 
+	</select>
+	<!--  插入菜单，同时返回主键ID -->
+	<insert id="insertSysMenu" parameterType="SysMenu" useGeneratedKeys="true" keyProperty="menuId">
+ 		insert into sys_menu(
+ 			<if test="dataUrl != null and dataUrl != ''">data_url,</if>
+ 			<if test="menuClass != null and menuClass != ''">menu_class,</if>
+ 			<if test="menuName != null and menuName != ''">menu_name,</if>
+ 			<if test="menuPrantId != null">menu_prant_id,</if>
+ 			<if test="sequence != null">sequence,</if>
+ 			<if test="menuType != null and menuType != ''">menu_type,</if>
+ 			<if test="menuState != null and menuState != ''">menu_state,</if>
+ 			<if test="menuIcon != null and menuIcon != ''">menu_icon,</if>
+ 			<if test="modifyTime !=null and modifyTime != ''">modify_time,</if>
+ 			<if test="createUser != null">create_user,</if>
+ 			<if test="modifyUser != null">modify_user,</if>
+ 			<if test="createTime != null and createTime != ''">create_time</if>
+ 		)values(
+ 			<if test="dataUrl != null and dataUrl != ''">#{dataUrl},</if>
+ 			<if test="menuClass != null and menuClass != ''">#{menuClass},</if>
+ 			<if test="menuName != null and menuName != ''">#{menuName},</if>
+ 			<if test="menuPrantId != null">#{menuPrantId},</if>
+ 			<if test="sequence != null">#{sequence},</if>
+ 			<if test="menuType != null and menuType != ''">#{menuType},</if>
+ 			<if test="menuState != null and menuState != ''">#{menuState},</if>
+ 			<if test="menuIcon != null and menuIcon != ''">#{menuIcon},</if>
+ 			<if test="modifyTime !=null and modifyTime != ''">#{modifyTime},</if>
+ 			<if test="createUser != null">#{createUser},</if>
+ 			<if test="modifyUser != null">#{modifyUser},</if>
+ 			<if test="createTime != null and createTime != ''">#{createTime}</if>
+ 		)
+	</insert>
+	<!-- 查询全部菜单 -->
+	<select id="getAllMenus" resultMap="BaseResult">
+		select * from sys_menu
+		<where>
+			<if test="menuName != null and menuName != ''">and menu_name=#{menuName}</if>
+		</where>
+	</select>
+	<!-- 修改菜单信息 -->
+	<update id="updateSysMenu" parameterType="java.lang.Integer">
+		update sys_menu
+		<set>
+			<if test="dataUrl != null and dataUrl != ''">data_url=#{dataUrl},</if>
+ 			<if test="menuClass != null and menuClass != ''">menu_class=#{menuClass},</if>
+ 			<if test="menuName != null and menuName != ''">menu_name=#{menuName},</if>
+ 			<if test="menuPrantId != null">menu_prant_id=#{menuPrantId},</if>
+ 			<if test="sequence != null">sequence=#{sequence},</if>
+ 			<if test="menuType != null and menuType != ''">menu_type=#{menuType},</if>
+ 			<if test="menuState != null and menuState != ''">menu_state=#{menuState},</if>
+ 			<if test="menuIcon != null and menuIcon != ''">menu_icon=#{menuIcon},</if>
+ 			<if test="createTime != null and createTime != ''">create_time=#{createTime},</if>
+ 			<if test="modifyTime !=null and modifyTime != ''">modify_time=#{modifyTime},</if>
+ 			<if test="createUser != null">create_user=#{createUser},</if>
+ 			<if test="modifyUser != null">modify_user=#{modifyUser},</if>
+		</set>
+		where menu_id=#{menuId}
+	</update>
+	<!-- 删除菜单 -->
+	<delete id="delectSysMenu" parameterType="java.lang.Integer">
+		delete from sys_menu where menu_id=#{menuId}
+	</delete>
+	<!-- 根据ID查询菜单 -->
+	<select id="getSysMenuById" resultMap="BaseResult">
+		select * from sys_menu where menu_id=#{menuId}
+	</select>
+</mapper> 
