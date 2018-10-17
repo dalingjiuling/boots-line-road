@@ -2,7 +2,8 @@ package com.line.road.modular.persistence.primary.dao;
 
 import java.util.List;
 
-import com.line.road.modular.persistence.primary.model.User;
+import com.line.road.modular.persistence.model.User;
+
 
 
 

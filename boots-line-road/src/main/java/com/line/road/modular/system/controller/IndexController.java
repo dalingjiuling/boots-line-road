@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.github.pagehelper.PageInfo;
 import com.line.road.framework.web.controller.BaseController;
-import com.line.road.modular.persistence.primary.model.User;
-import com.line.road.modular.persistence.secondary.model.Person;
+import com.line.road.modular.persistence.model.Person;
+import com.line.road.modular.persistence.model.User;
 import com.line.road.modular.system.service.IUserService;
 
 @Controller
@@ -24,11 +24,11 @@ public class IndexController extends BaseController {
 	private IUserService iUserService;
 
 	@RequestMapping("/")
-	@ResponseBody
+	// @ResponseBody
 	public String index() {
-		User u = iUserService.selectUserById(1l);
-		System.out.println(u.toString());
-		return "hello world!";
+		// User u = iUserService.selectUserById(1l);
+		// System.out.println(u.toString());
+		return "index.html";
 	}
 
 	@RequestMapping("/test")

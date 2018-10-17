@@ -2,8 +2,8 @@ package com.line.road.modular.persistence.secondary.dao;
 
 import java.util.List;
 
+import com.line.road.modular.persistence.model.Person;
 import com.line.road.modular.persistence.model.User;
-import com.line.road.modular.persistence.secondary.model.Person;
 
 public interface ISecUserDao {
 

@@ -1,10 +1,10 @@
 # Mybatis配置
 mybatis: 
   one:  
-    type-aliases-package: com.line.road.modular.persistence.primary.model
-    mapper-locations: classpath:/mybatis/system/*.xml
+    type-aliases-package: com.line.road.modular.persistence.model
+    mapper-locations: classpath:/mybatis/primary/*.xml
   two:
-    type-aliases-package: com.line.road.modular.persistence.secondary.model
+    type-aliases-package: com.line.road.modular.persistence.model
     mapper-locations: classpath:/mybatis-sec/*.xml
   
 #http://localhost:8080/druid/index.html

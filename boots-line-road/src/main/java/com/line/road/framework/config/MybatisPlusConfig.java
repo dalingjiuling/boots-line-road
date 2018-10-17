@@ -1,10 +1,8 @@
 package com.line.road.framework.config;
 
-import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.context.annotation.Configuration;
-
 /**
- * mybatis配置
+ * mybatis配置</br>
+ * 单个数据源配置
  * 
  * @author zhaoliangliang
  * @since 2018-04-24 14:07

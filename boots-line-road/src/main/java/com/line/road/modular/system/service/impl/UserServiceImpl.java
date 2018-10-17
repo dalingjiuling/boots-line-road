@@ -8,11 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import com.line.road.modular.persistence.model.Person;
+import com.line.road.modular.persistence.model.User;
 import com.line.road.modular.persistence.primary.dao.IUserDao;
-import com.line.road.modular.persistence.primary.model.User;
 import com.line.road.modular.persistence.secondary.dao.ISecUserDao;
-import com.line.road.modular.persistence.secondary.model.Person;
 import com.line.road.modular.system.service.IUserService;
 
 @Service
