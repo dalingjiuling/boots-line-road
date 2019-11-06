@@ -2,8 +2,10 @@ package com.line.road.modular.persistence.primary.dao;
 
 import java.util.List;
 
+import com.line.road.modular.persistence.dao.MyBatisDao;
 import com.line.road.modular.persistence.model.SysMenu;
 
+@MyBatisDao
 public interface SysMenuDao {
 
 	/**

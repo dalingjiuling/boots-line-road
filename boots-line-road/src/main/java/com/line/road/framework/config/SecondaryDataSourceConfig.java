@@ -19,9 +19,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
+import com.line.road.modular.persistence.dao.MyBatisDao;
 
 @Configuration
-@MapperScan(value = "com.line.road.modular.persistence.secondary.dao", sqlSessionTemplateRef = "secSqlSessionTemplate")
+@MapperScan(value = "com.line.road.modular.persistence.secondary.dao", sqlSessionTemplateRef = "secSqlSessionTemplate", annotationClass = MyBatisDao.class)
 @EnableTransactionManagement
 public class SecondaryDataSourceConfig {
 

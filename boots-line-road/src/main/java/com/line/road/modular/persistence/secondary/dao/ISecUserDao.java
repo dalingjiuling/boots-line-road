@@ -2,9 +2,11 @@ package com.line.road.modular.persistence.secondary.dao;
 
 import java.util.List;
 
+import com.line.road.modular.persistence.dao.MyBatisDao;
 import com.line.road.modular.persistence.model.Person;
 import com.line.road.modular.persistence.model.User;
 
+@MyBatisDao
 public interface ISecUserDao {
 
 	/**
