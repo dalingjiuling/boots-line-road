@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>mapper</name>
+	<filePath>src/main/resources/mappings/${lastPackageName}/${moduleName}/${subModuleName}</filePath>
+	<fileName>${ClassName}Dao.xml</fileName>
+	<content><![CDATA[<#ftl>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${packageName}.${moduleName}.dao<#if subModuleName != "">.${subModuleName}</#if>.${ClassName}Dao">
+	
+	<!-- 输出字段列 -->
+	<sql id="${className}Columns">
+		<#assign columnField>
+			<#list table.columnList as c>
+		a.${c.columnName} AS "${c.javaFieldId}",
+			</#list>
+			<#list table.columnList as c>
+				<#if c.showType?? && c.showType == "userselect">
+					<#list c.javaFieldAttrs as a>
+		u${c_index + 1}.${a[1]} AS "${c.simpleJavaField}.${a[0]}",
+					</#list>
+				<#elseif c.showType?? && c.showType == "officeselect">
+					<#list c.javaFieldAttrs as a>
+		o${c_index + 1}.${a[1]} AS "${c.simpleJavaField}.${a[0]}",
+					</#list>
+				<#elseif c.showType?? && c.showType == "areaselect">
+					<#list c.javaFieldAttrs as a>
+		a${c_index + 1}.${a[1]} AS "${c.simpleJavaField}.${a[0]}",
+					</#list>
+				</#if>
+				<#-- 父表关联字段 -->
+				<#if table.parentExists && table.parentTableFkName == c.columnName>
+					<#list c.javaFieldAttrs as a>
+<!-- 		b.${a[1]} AS "${c.simpleJavaField}.${a[0]}", -->
+					</#list>
+				</#if>
+			</#list>
+		</#assign>
+${columnField?substring(0, columnField?last_index_of(","))}
+	</sql>
+	
+	<!-- 输出字段关联表 -->
+	<sql id="${className}Joins">
+		<#-- 关联父表 -->
+		<#if table.parentExists>
+<!-- 		LEFT JOIN ${table.parent.tableName} b ON b.id = a.${table.parentTableFkName} -->
+		</#if>
+		<#-- 关联系统表 -->
+		<#list table.columnList as c>
+			<#if c.showType?? && c.showType == "userselect">
+		LEFT JOIN sys_user u${c_index + 1} ON u${c_index + 1}.user_code = a.${c.columnName}
+			<#elseif c.showType?? && c.showType == "officeselect">
+		LEFT JOIN sys_office o${c_index + 1} ON o${c_index + 1}.office_code = a.${c.columnName}
+			<#elseif c.showType?? && c.showType == "areaselect">
+		LEFT JOIN sys_area a${c_index + 1} ON a${c_index + 1}.area_code = a.${c.columnName}
+			</#if>
+		</#list>
+	</sql>
+	
+	<!-- 获取单条数据 -->
+	<select id="get" resultType="${ClassName}">
+		SELECT 
+			<include refid="${className}Columns"/>
+		FROM ${table.tableName} a
+		<include refid="${className}Joins"/>
+		WHERE<#assign pkWhere><#list table.pkList as pk>
+			AND a.${pk.columnName} = ${"#"}{${pk.javaFieldId}}</#list></#assign>${pkWhere?substring(pkWhere?index_of("AND")+3)}
+	</select>
+	
+	<!-- 查询数据列表 -->
+	<select id="findList" resultType="${ClassName}">
+		SELECT 
+			<include refid="${className}Columns"/>
+		FROM ${table.tableName} a
+		<include refid="${className}Joins"/>
+		<where>
+			<#if table.statusExists>
+			a.status != ${"#"}{STATUS_DELETE}
+			<if test="status != null and status != ''">
+				AND a.status = ${"#"}{status}
+			</if>
+			</#if>
+			<#list table.columnList as c>
+				<#if (c.isQuery?? && c.isQuery == "1") || (table.parentExists && table.parentTableFkName == c.columnName)>
+					<#if c.queryType ?? && c.queryType == 'between'>
+			<if test="begin${c.simpleJavaField?cap_first} != null and end${c.simpleJavaField?cap_first} != null <#if c.simpleJavaField != c.javaFieldId>and begin${c.javaFieldId?cap_first} != null and end${c.javaFieldId?cap_first} != null </#if>">
+					<#else>
+			<if test="${c.simpleJavaField} != null<#if c.simpleJavaField != c.javaFieldId> and ${c.javaFieldId} != null</#if> <#if c.javaType == 'String' || c.javaType == 'cn.net.ecode.modules.sys.entity.User' || c.javaType == 'cn.net.ecode.modules.sys.entity.Office' || c.javaType == 'cn.net.ecode.modules.sys.entity.Area' || (table.parentExists && table.parentTableFkName == c.columnName)>and ${c.javaFieldId} != ''</#if>">
+					</#if>
+					<#if c.queryType ?? && c.queryType == 'between'>
+				AND a.${c.columnName} BETWEEN ${"#"}{begin${c.simpleJavaField?cap_first}} AND ${"#"}{end${c.simpleJavaField?cap_first}}
+					<#elseif c.queryType ?? && c.queryType == 'all_like'>
+				AND a.${c.columnName} LIKE 
+					<if test="dbName == 'oracle'">'%'||${"#"}{${c.javaFieldId}}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+${"#"}{${c.javaFieldId}}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',${"#"}{${c.javaFieldId}},'%')</if>
+					<#elseif c.queryType ?? && c.queryType == 'left_like'>
+				AND a.${c.columnName} LIKE 
+					<if test="dbName == 'oracle'">'%'||${"#"}{${c.javaFieldId}}</if>
+					<if test="dbName == 'mssql'">'%'+${"#"}{${c.javaFieldId}}</if>
+					<if test="dbName == 'mysql'">concat('%',${"#"}{${c.javaFieldId}})</if>
+					<#elseif c.queryType ?? && c.queryType == 'right_like'>
+				AND a.${c.columnName} LIKE 
+					<if test="dbName == 'oracle'">${"#"}{${c.javaFieldId}}||'%'</if>
+					<if test="dbName == 'mssql'">${"#"}{${c.javaFieldId}}+'%'</if>
+					<if test="dbName == 'mysql'">concat(${"#"}{${c.javaFieldId}},'%')</if>
+					<#else>
+				AND a.${c.columnName} ${c.queryType?upper_case} ${"#"}{${c.javaFieldId}}
+					</#if>
+			</if>
+				</#if>
+			</#list>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${"$"}{page.orderBy}
+			</when>
+			<otherwise>
+				<#if table.parentExists>
+					<#if table.createDateExists>
+				ORDER BY a.create_date ASC
+					</#if>
+				<#else>
+					<#if table.updateDateExists>
+				ORDER BY a.update_date DESC
+					</#if>
+				</#if>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 查询数据列表（全部数据） -->
+	<select id="findAllList" resultType="${ClassName}">
+		SELECT 
+			<include refid="${className}Columns"/>
+		FROM ${table.tableName} a
+		<include refid="${className}Joins"/>
+		<where>
+			<#if table.statusExists>a.status != ${"#"}{STATUS_DELETE}</#if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${"$"}{page.orderBy}
+			</when>
+			<otherwise>
+				<#if table.parentExists>
+					<#if table.createDateExists>
+				ORDER BY a.create_date ASC
+					</#if>
+				<#else>
+					<#if table.updateDateExists>
+				ORDER BY a.update_date DESC
+					</#if>
+				</#if>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 插入数据 -->
+	<insert id="insert">
+		INSERT INTO ${table.tableName}(
+		<#assign insertField>
+			<#list table.columnList as c>
+				<#if c.isInsert?? && c.isInsert == "1">
+			${c.columnName},
+				</#if>
+			</#list>
+		</#assign>
+${insertField?substring(0, insertField?last_index_of(","))}
+		) VALUES (
+		<#assign insertJavaField>
+			<#list table.columnList as c>
+				<#if c.isInsert?? && c.isInsert == "1">
+			${"#"}{${c.javaFieldId}},
+				</#if>
+			</#list>
+		</#assign>
+${insertJavaField?substring(0, insertJavaField?last_index_of(","))}
+		)
+	</insert>
+	
+	<!-- 更新数据 -->
+	<update id="update">
+		UPDATE ${table.tableName} SET 	
+			<#assign updateField>		
+				<#list table.columnList as c>
+					<#if c.isUpdate?? && c.isUpdate == "1">
+			${c.columnName} = ${"#"}{${c.javaFieldId}},
+					</#if>
+				</#list>
+			</#assign>
+${updateField?substring(0, updateField?last_index_of(","))}
+		WHERE<#assign pkWhere><#list table.pkList as pk>
+			AND ${pk.columnName} = ${"#"}{${pk.javaFieldId}}</#list></#assign>${pkWhere?substring(pkWhere?index_of("AND")+3)}
+	</update>
+	<#--if table.statusExists>
+	
+	<!-- 更新状态数据 -- >
+	<update id="updateStatus">
+		UPDATE ${table.tableName} SET 
+			<#if table.updateDateExists>
+			update_by = ${"#"}{updateBy.id},
+			update_date = ${"#"}{updateDate},
+			</#if>
+			status = ${"#"}{status}
+		WHERE<#assign pkWhere><#list table.pkList as pk>
+			AND ${pk.columnName} = ${"#"}{${pk.javaFieldId}}</#list></#assign>${pkWhere?substring(pkWhere?index_of("AND")+3)}
+	</update>
+	</#if-->
+	
+	<!-- <#if table.statusExists>逻辑<#else>物理</#if>删除数据 -->
+	<update id="delete">
+	<#if table.statusExists>
+		UPDATE ${table.tableName} SET 
+			<#if table.updateDateExists>
+			update_by = ${"#"}{updateBy.id},
+			update_date = ${"#"}{updateDate},
+			</#if>
+			status = ${"#"}{STATUS_DELETE}
+	<#else>
+		DELETE FROM ${table.tableName}
+	</#if>
+	<#if table.parentExists>
+		<#list table.columnList as c>
+			<#if table.parentTableFkName == c.columnName>
+		<choose>
+			<when test="<#assign pkWhere><#list table.pkList as pk> and ${pk.javaFieldId} != null and ${pk.javaFieldId} != ''</#list></#assign>${pkWhere?substring(pkWhere?index_of("and")+4)}">
+				WHERE<#assign pkWhere><#list table.pkList as pk>
+					AND ${pk.columnName} = ${"#"}{${pk.javaFieldId}}</#list></#assign>${pkWhere?substring(pkWhere?index_of("AND")+3)}
+			</when>
+			<otherwise>
+				WHERE ${table.parentTableFkName} = ${"#"}{${c.javaFieldId}}
+			</otherwise>
+		</choose>
+			</#if>
+		</#list>
+	<#else>
+		WHERE<#assign pkWhere><#list table.pkList as pk>
+			AND ${pk.columnName} = ${"#"}{${pk.javaFieldId}}</#list></#assign>${pkWhere?substring(pkWhere?index_of("AND")+3)}
+	</#if>
+	</update>
+	
+</mapper>]]>
+	</content>
+</template>

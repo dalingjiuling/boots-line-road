@@ -1,0 +1,63 @@
+		<form:form id="searchForm" modelAttribute="${className}" action="${'$'}{ctx}/${urlPrefix}/listData" method="post" class="breadcrumb form-inline hide"
+				data-page-no="${'$'}{page.pageNo}" data-page-size="${'$'}{page.pageSize}" data-order-by="${'$'}{page.orderBy}">
+			[#list table.columnList as c]
+				[#if c.isQuery?? && c.isQuery == "1"]
+			<div class="form-group">
+				<label class="control-label">${c.comments}：</label>
+			[#if c.showType == "input" || c.showType == "textarea"]
+				<div class="input-inline">
+					<form:input path="${c.javaFieldId}" htmlEscape="false"[#if c.dataLength != "0"] maxlength="${c.dataLength}"[/#if] class="form-control input-sm width-160"/>
+				</div>
+			[#elseif c.showType == "select"]
+				<div class="input-inline">
+					<form:select path="${c.javaFieldId}" class="form-control input-sm width-160">
+						<form:option value="" label="全部"/>
+						<form:options items="${'$'}{fns:getDictList('${c.dictType}')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					</form:select>
+				</div>
+			[#elseif c.showType == "checkbox"]
+				<div class="input-inline">
+					<form:checkboxes path="${c.javaFieldId}" items="${'$'}{fns:getDictList('${c.dictType}')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</div>
+			[#elseif c.showType == "radiobox"]
+				<div class="input-inline">
+					<form:radiobuttons path="${c.javaFieldId}" items="${'$'}{fns:getDictList('${c.dictType}')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</div>
+			[#elseif c.showType == "dateselect" && c.queryType == "between"]
+				<div class="input-inline">
+					<input name="begin${c.simpleJavaField?cap_first}" type="text" readonly="readonly" maxlength="20" class="input-sm Wdate-date"
+						value="${'$'}{fns:formatDate(${className}.begin${c.simpleJavaField?cap_first}, 'yyyy-MM-dd')}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+					&nbsp;--&nbsp;
+					<input name="end${c.simpleJavaField?cap_first}" type="text" readonly="readonly" maxlength="20" class="input-sm Wdate-date"
+						value="${'$'}{fns:formatDate(${className}.begin${c.simpleJavaField?cap_first}, 'yyyy-MM-dd')}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+				</div>
+			[#elseif c.showType == "dateselect"]
+				<div class="input-inline">
+					<input name="${c.javaFieldId}" type="text" readonly="readonly" maxlength="20" class="form-control input-sm Wdate width-90"
+						value="<fmt:formatDate value="${'$'}{${className}.${c.javaFieldId}}" pattern="yyyy-MM-dd"/>"
+						onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+				</div>
+			[#elseif c.showType == "userselect"]
+				<div class="input-inline width-160" >
+					<sys:treeselect id="${c.simpleJavaField}" name="${c.javaFieldId}" value="${'$'}{${className}.${c.javaFieldId}}" labelName="${c.javaFieldName}" labelValue="${'$'}{${className}.${c.javaFieldName}}"
+						title="用户" url="/sys/office/treeData?type=3" controlSize="sm" allowClear="true" notAllowSelectParent="false"/>
+				</div>
+			[#elseif c.showType == "officeselect"]
+				<div class="input-inline width-160" >
+					<sys:treeselect id="${c.simpleJavaField}" name="${c.javaFieldId}" value="${'$'}{${className}.${c.javaFieldId}}" labelName="${c.javaFieldName}" labelValue="${'$'}{${className}.${c.javaFieldName}}"
+						title="部门" url="/sys/office/treeData?type=2" controlSize="sm" allowClear="true" notAllowSelectParent="false"/>
+				</div>
+			[#elseif c.showType == "areaselect"]
+				<div class="input-inline width-160" >
+					<sys:treeselect id="${c.simpleJavaField}" name="${c.javaFieldId}" value="${'$'}{${className}.${c.javaFieldId}}" labelName="${c.javaFieldName}" labelValue="${'$'}{${className}.${c.javaFieldName}}"
+						title="区域" url="/sys/area/treeData" controlSize="sm" allowClear="true" notAllowSelectParent="false"/>
+				</div>
+			[/#if]
+			</div>
+				[/#if]
+			[/#list]
+			<div class="form-group" style="margin-left:10px;"> 
+				<input class="btn btn-primary btn-sm" type="submit" value="查询"/>&nbsp;
+				<input class="btn default btn-sm" type="reset" value="重置"/>
+			</div>
+		</form:form>

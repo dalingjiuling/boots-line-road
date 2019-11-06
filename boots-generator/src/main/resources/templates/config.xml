@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<!-- 模板分类 -->
+	<tplCategory>
+		<category value="curd" name="增删改查（单表 、主子表）">
+			<template>category-ref:dao</template>
+			<template>curd/service.xml</template>
+			<template>curd/controller.xml</template>
+			<template>curd/viewList.xml</template>
+			<template>curd/viewForm.xml</template>
+			<childTable>
+				<template>category-ref:dao</template>
+			</childTable>
+		</category>
+		<category value="curdTableForm" name="增删改查（单表 - 表格表单）">
+			<template>category-ref:dao</template>
+			<template>curd/service.xml</template>
+			<template>curd/controller.xml</template>
+			<template>curd/viewList.xml</template>
+			<template>curd/viewTableForm.xml</template>
+		</category>
+		<category value="dao" name="仅持久层（dao/entity/mapper）">
+			<template>dao/entity.xml</template>
+			<template>dao/mapper.xml</template>
+			<template>dao/dao.xml</template>
+		</category>
+		<category value="dao_service" name="业务层、持久层（service/dao/entity/mapper）">
+			<template>category-ref:dao</template>
+			<template>curd/service.xml</template>
+		</category>
+		<category value="treeTable" name="树结构表（一体）">
+			<template>treetable/entity.xml</template>
+			<template>treetable/mapper.xml</template>
+			<template>treetable/dao.xml</template>
+			<template>treetable/service.xml</template>
+			<template>treetable/controller.xml</template>
+			<template>treetable/viewList.xml</template>
+			<template>treetable/viewForm.xml</template>
+		</category>
+		<!-- <category value="treeTableAndList" name="树结构表（左树右表）"> <template>category-ref:dao</template> 
+			</category> -->
+		<category value="query" name="仅查询功能">
+			<template>query/entity.xml</template>
+			<template>query/mapper.xml</template>
+			<template>query/dao.xml</template>
+			<template>query/service.xml</template>
+			<template>query/controller.xml</template>
+			<template>query/viewList.xml</template>
+			<template>query/viewView.xml</template>
+		</category>
+	</tplCategory>
+	<!-- java类型 -->
+	<javaType>
+		<dict value="String" name="String" />
+		<dict value="Long" name="Long" />
+		<dict value="Integer" name="Integer" />
+		<dict value="Double" name="Double" />
+		<dict value="java.util.Date" name="Date" />
+		<dict value="cn.net.ecode.modules.sys.entity.User" name="User" />
+		<dict value="cn.net.ecode.modules.sys.entity.Office" name="Office" />
+		<dict value="cn.net.ecode.modules.sys.entity.Area" name="Area" />
+		<dict value="This" name="ThisObj" description="生成当前对象" />
+		<dict value="Custom" name="Custom" description="自定义对象，生成后手动设置" />
+	</javaType>
+	<!-- 查询类型 -->
+	<queryType>
+		<dict value="=" name="=" />
+		<dict value="!=" name="!=" />
+		<dict value=">" name=">" />
+		<dict value=">=" name=">=" />
+		<dict value="<" name="<" />
+		<dict value="<=" name="<=" />
+		<dict value="between" name="Between" />
+		<dict value="like" name="Like" />
+		<dict value="left_like" name="Left Like" />
+		<dict value="right_like" name="Right Like" />
+		<dict value="all_like" name="All Like" />
+	</queryType>
+	<!-- 字段显示类型 -->
+	<showType>
+		<dict value="input" name="单行文本框" />
+		<dict value="textarea" name="多行文本框" />
+		<dict value="hidden" name="隐藏域字段" />
+		<dict value="select" name="下拉选择" />
+		<dict value="radiobox" name="单选按钮" />
+		<dict value="checkbox" name="复选框" />
+		<dict value="dateselect" name="日期选择" />
+		<dict value="userselect" name="人员树形选择" />
+		<dict value="officeselect" name="部门树形选择" />
+		<dict value="areaselect" name="区域树形选择" />
+		<!-- <dict value="treeselect" name="树选择控件" description="需指定树形控件的URL地址"/> -->
+		<!-- <dict value="fileselect" name="文件上传选择"/> -->
+	</showType>
+	<tableOptions>
+		<dict value="enable_disable" name="启用停用功能" type="function" />
+		<dict value="not_delete" name="不要删除功能" type="function" />
+		<dict value="one_columns" name="一栏" type="form_style" />
+		<dict value="two_columns" name="两栏" type="form_style" />
+	</tableOptions>
+	<tableColumnOptions>
+	</tableColumnOptions>
+</config>

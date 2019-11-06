@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>service</name>
+	<filePath>src/main/java/${packageName}/${moduleName}/service/${subModuleName}</filePath>
+	<fileName>${ClassName}Service.java</fileName>
+	<content><![CDATA[<#ftl>
+/**
+ * Copyright &copy; 2013-2016 赵亮亮   All rights reserved.
+ */
+package ${packageName}.${moduleName}.service<#if subModuleName != "">.${subModuleName}</#if>;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cn.net.ecode.common.service.TreeService;
+import ${packageName}.${moduleName}.entity<#if subModuleName != "">.${subModuleName}</#if>.${ClassName};
+import ${packageName}.${moduleName}.dao<#if subModuleName != "">.${subModuleName}</#if>.${ClassName}Dao;
+
+/**
+ * ${functionName}Service
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ */
+@Service
+@Transactional(readOnly = true)
+public class ${ClassName}Service extends TreeService<${ClassName}Dao, ${ClassName}> {
+
+	/**
+	 * 获取单条数据
+	 * @param ${className}
+	 * @return
+	 */
+	public ${ClassName} get(${ClassName} ${className}) {
+		return super.get(${className});
+	}
+	
+	/**
+	 * 查询列表
+	 */
+	public List<${ClassName}> findList(${ClassName} ${className}) {
+		return super.findList(${className});
+	}
+	
+	/**
+	 * 查询全部列表
+	 * @return
+	 */
+	public List<${ClassName}> findAllList(${ClassName} ${className}) {
+		return dao.findAllList(${className});
+	}
+	
+
+	/**
+	 * 保存数据（插入或更新）
+	 */
+	@Transactional(readOnly = false)
+	public void save(${ClassName} ${className}) {
+		super.save(${className});
+	}
+
+	/**
+	 * 保存数据（删除）
+	 */
+	@Transactional(readOnly = false)
+	public void delete(${ClassName} ${className}) {
+		super.delete(${className});
+	}
+	
+	/**
+	 * 获取当前节点下的启用列表
+	 * 
+	 * @param ${className}
+	 * @return
+	 */
+	public List<${ClassName}> getEnabledList(${ClassName} ${className}) {
+		return dao.getEnabledList(${className});
+	}
+
+	/**
+	 * 停用当前节点
+	 */
+	@Transactional(readOnly = false)
+	public void disable(${ClassName} ${className}) {
+		dao.disable(${className});
+	}
+
+	/**
+	 * 停用当前节点和子节点
+	 */
+	@Transactional(readOnly = false)
+	public void disableByGroup(${ClassName} ${className}) {
+		dao.disableByGroup(${className});
+	}
+
+	/**
+	 * 启用当前节点
+	 */
+	@Transactional(readOnly = false)
+	public void enable(${ClassName} ${className}) {
+		dao.enable(${className});
+	}
+
+	/**
+	 * 启用当前节点和子节点
+	 */
+	@Transactional(readOnly = false)
+	public void enableByGroup(${ClassName} ${className}) {
+		dao.enableByGroup(${className});
+	}
+	
+	<#list table.columnList as c><#if c.columnName == 'sorts'>
+	/** 
+	 * 获取子节点中最大的排序号
+	 * @param ${className}
+	 * @return int  
+	 */
+	public int getMaxSort(${ClassName} ${className}) {
+		return dao.getMaxSort(${className});
+	}
+	</#if></#list>
+	
+	/** 
+	 * 获取子节点最大的个数
+	 * @param ${className}
+	 * @return int  
+	 */
+	public int getMaxSize(${ClassName} ${className}) {
+		return dao.getMaxSize(${className});
+	}
+	
+}]]>
+	</content>
+</template>

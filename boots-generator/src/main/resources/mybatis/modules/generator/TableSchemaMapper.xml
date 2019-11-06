@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.line.road.modules.generator.dao.TableSchemaDao">
+
+	<!-- 查询对应数据库存在的表和视图 -->
+	<select id="findTableList" resultType="GenTable">
+		<if test="jdbcName == 'oracle'">
+			SELECT
+			t.TABLE_NAME AS tableName,
+			c.COMMENTS AS comments
+			FROM
+			user_tables t, user_tab_comments c
+			WHERE t.table_name = c.table_name
+			<if test="tableName != null and tableName != ''">
+				AND t.table_name = upper(#{tableName})
+			</if>
+			UNION ALL
+			SELECT
+			t.VIEW_NAME AS tableName,
+			c.COMMENTS AS comments
+			FROM
+			user_views t, user_tab_comments c
+			WHERE t.view_name = c.table_name
+			<if test="tableName != null and tableName != ''">
+				AND t.view_name = upper(#{tableName})
+			</if>
+			ORDER BY tableName
+		</if>
+		<if test="jdbcName == 'mssql'">
+			SELECT
+			t.name AS tableName,
+			p.value AS comments
+			FROM sysobjects t
+			LEFT
+			JOIN sys.extended_properties p ON
+			p.major_id = t.id
+			AND p.minor_id = 0
+			AND p.name = 'MS_Description'
+			WHERE t.xtype = 'U'
+			<if test="tableName != null and tableName != ''">
+				AND t.name = upper(#{tableName})
+			</if>
+			ORDER BY t.name
+		</if>
+		<if test="jdbcName == 'mysql'">
+			SELECT
+			t.table_name AS tableName,
+			t.TABLE_COMMENT AS comments
+			FROM
+			information_schema.`TABLES` t
+			WHERE t.TABLE_SCHEMA = (select
+			database())
+			<if test="tableName != null and tableName != ''">
+				AND t.TABLE_NAME = #{tableName}
+			</if>
+			UNION ALL
+			SELECT
+			t.table_name AS tableName,
+			t.VIEW_DEFINITION AS
+			comments
+			FROM information_schema.`VIEWS` t
+			WHERE t.TABLE_SCHEMA =
+			(select database())
+			<if test="tableName != null and tableName != ''">
+				AND t.TABLE_NAME = #{tableName}
+			</if>
+			ORDER BY tableName
+		</if>
+		<if test="jdbcName == 'highgo'">
+			SELECT
+			c.relname AS tableName,
+			d.description AS comments
+			FROM pg_class c
+			JOIN pg_namespace n ON c.relnamespace =
+			n.oid
+			LEFT JOIN pg_description
+			d ON d.objoid = c.relfilenode AND
+			d.objsubid = 0
+			WHERE c.relkind = 'r'
+			and c.relhaspkey = 't'
+			AND n.nspname = #{jdbcUsername}
+			<if test="tableName != null and tableName != ''">
+				AND c.relname = #{tableName}
+			</if>
+			ORDER BY n.nspname, c.relname
+		</if>
+	</select>
+	
+	<!-- 获取表的主键字段 -->
+	<select id="findTablePK" resultType="GenTableColumn">
+		<if test="jdbcName == 'oracle'">
+			SELECT
+			lower(cu.COLUMN_NAME) AS columnName
+			FROM
+			user_cons_columns cu, user_constraints au
+			WHERE cu.constraint_name =
+			au.constraint_name
+			AND au.constraint_type = 'P'
+			AND au.table_name =
+			upper(#{tableName})
+		</if>
+		<if test="jdbcName == 'mssql'">
+			SELECT
+			lower(b.column_name) AS columnName
+			FROM
+			information_schema.table_constraints a
+			JOIN
+			information_schema.constraint_column_usage b ON a.constraint_name =
+			b.constraint_name
+			WHERE a.constraint_type = 'PRIMARY KEY'
+			AND
+			a.table_name = #{tableName}
+		</if>
+		<if test="jdbcName == 'mysql'">
+			SELECT
+			lower(au.COLUMN_NAME) AS columnName
+			FROM
+			information_schema.`COLUMNS` au
+			WHERE au.TABLE_SCHEMA = (select
+			database())
+			AND au.COLUMN_KEY='PRI'
+			AND au.TABLE_NAME = #{tableName}
+		</if>
+		<if test="jdbcName == 'highgo'">
+			SELECT
+			lower(pg_attribute.attname) as columnName
+			FROM
+			pg_constraint
+			JOIN pg_class ON pg_constraint.conrelid = pg_class.oid
+			JOIN pg_attribute on pg_attribute.attrelid = pg_class.oid
+			AND
+			pg_attribute.attnum = pg_constraint.conkey[1]
+			JOIN pg_type on
+			pg_type.oid = pg_attribute.atttypid
+			WHERE pg_class.relname =
+			#{tableName}
+			AND pg_constraint.contype = 'p'
+		</if>
+	</select>
+	
+	<!-- 获取表中的字段 -->
+	<select id="findTableColumnList" resultType="GenTableColumn">
+		<if test="jdbcName == 'oracle'">
+			SELECT
+				t.COLUMN_NAME AS columnName,
+				c.COMMENTS AS comments,
+				<!-- t.DATA_TYPE, t.DATA_LENGTH, t.DATA_PRECISION, t.DATA_SCALE, -->
+				(CASE WHEN t.NULLABLE = 'Y' THEN '1' ELSE '0' END) AS isNull,
+				(t.COLUMN_ID * 10) AS sorts,
+				decode(t.DATA_TYPE,
+					'DATE',t.DATA_TYPE || '(' || t.DATA_LENGTH || ')',
+					'VARCHAR2', t.DATA_TYPE || '(' || t.DATA_LENGTH || ')',
+					'VARCHAR', t.DATA_TYPE || '(' || t.DATA_LENGTH || ')',
+					'NVARCHAR2', t.DATA_TYPE || '(' || t.DATA_LENGTH/2 || ')',
+					'CHAR', t.DATA_TYPE || '(' || t.DATA_LENGTH || ')',
+					'NUMBER',t.DATA_TYPE || (
+						nvl2(t.DATA_PRECISION,
+							nvl2(decode(t.DATA_SCALE, 0, null, t.DATA_SCALE),
+									'(' || t.DATA_PRECISION || ',' || t.DATA_SCALE || ')', 
+									'(' || t.DATA_PRECISION || ')'
+								),'(18)'
+							)
+						),t.DATA_TYPE) AS columnType 
+			FROM user_tab_columns t, user_col_comments c 
+			WHERE t.TABLE_NAME = c.table_name AND t.COLUMN_NAME = c.column_name 
+			<if test="tableName != null and tableName != ''">
+				AND t.TABLE_NAME = upper(#{tableName})
+			</if>
+			ORDER BY t.COLUMN_ID
+		</if>
+		<if test="jdbcName == 'mssql'">
+			SELECT
+				c.name AS columnName,
+				p.value AS comments,
+				(case when c.isnullable = 1 then '1' else '0' end) AS isNull,
+				(c.colid * 10) AS sorts,
+				(case when ct.name = 'datetime' or ct.name = 'datetime2' then ct.name
+					 when c.scale is null or c.scale = 0 then (ct.name + '(' + convert(varchar, c.prec) + ')')
+					 when c.scale > 0 then (ct.name + '(' + convert(varchar, c.prec) + ',' + convert(varchar, c.scale) + ')')
+					 else ct.name end) AS columnType
+			FROM sysobjects t
+			join syscolumns c on c.id = t.id
+			join systypes ct on ct.xusertype = c.xusertype 
+			LEFT JOIN sys.extended_properties p ON p.major_id = t.id AND p.minor_id = c.colid AND p.name = 'MS_Description'
+			WHERE t.xtype = 'U'
+			<if test="tableName != null and tableName != ''">
+				AND t.name = #{tableName}
+			</if>
+		</if>
+		<if test="jdbcName == 'mysql'">
+			SELECT 
+				t.COLUMN_NAME AS columnName, 
+				t.COLUMN_COMMENT AS comments,
+				(CASE WHEN t.IS_NULLABLE = 'YES' THEN '1' ELSE '0' END) AS isNull,
+				(t.ORDINAL_POSITION * 10) AS sorts,
+				t.COLUMN_TYPE AS columnType
+			FROM information_schema.`COLUMNS` t 
+			WHERE t.TABLE_SCHEMA = (select database())
+			<if test="tableName != null and tableName != ''">
+				AND t.TABLE_NAME = #{tableName}
+			</if>
+			ORDER BY t.ORDINAL_POSITION
+		</if>
+		<if test="jdbcName == 'highgo'">
+			SELECT
+				a.attname  AS columnName,
+				(CASE WHEN a.attnotnull = 't' THEN '1' ELSE '0' END) AS isNull,
+				(a.attnum * 10) AS sorts,
+				format_type(a.atttypid, a.atttypmod) AS columnType,
+				d.description AS comments
+			FROM pg_class c
+			JOIN pg_namespace n ON c.relnamespace = n.oid
+			JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum > 0
+			LEFT JOIN pg_description d ON d.objoid = a.attrelid AND d.objsubid = a.attnum
+			WHERE n.nspname = #{jdbcUsername}
+				<if test="tableName != null and tableName != ''">
+					AND c.relname = #{tableName}
+				</if>
+			ORDER BY a.attnum
+		</if>
+	</select>
+</mapper>

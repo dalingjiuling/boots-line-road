@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>service</name>
+	<filePath>src/main/java/${packageName}/${moduleName}/service/${subModuleName}</filePath>
+	<fileName>${ClassName}Service.java</fileName>
+	<content><![CDATA[<#ftl>
+/**
+ * Copyright &copy; 2013-2016 赵亮亮   All rights reserved.
+ */
+package ${packageName}.${moduleName}.service<#if subModuleName != "">.${subModuleName}</#if>;
+
+import java.util.List;
+
+<#if table.childList?size gt 0>
+import org.springframework.beans.factory.annotation.Autowired;
+</#if>
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cn.net.ecode.common.persistence.Page;
+import cn.net.ecode.common.service.CrudService;
+import ${packageName}.${moduleName}.entity<#if subModuleName != "">.${subModuleName}</#if>.${ClassName};
+import ${packageName}.${moduleName}.dao<#if subModuleName != "">.${subModuleName}</#if>.${ClassName}Dao;
+<#list table.childList as c>
+import ${packageName}.${moduleName}.entity<#if subModuleName != "">.${subModuleName}</#if>.${c.className?cap_first};
+import ${packageName}.${moduleName}.dao<#if subModuleName != "">.${subModuleName}</#if>.${c.className?cap_first}Dao;
+</#list>
+
+/**
+ * ${functionName}Service
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ */
+@Service
+@Transactional(readOnly = true)
+public class ${ClassName}Service extends CrudService<${ClassName}Dao, ${ClassName}> {
+	<#list table.childList as c>
+	
+	@Autowired
+	private ${c.className?cap_first}Dao ${c.className?uncap_first}Dao;
+	</#list>
+	
+	/**
+	 * 获取单条数据
+	 * @param ${className}
+	 * @return
+	 */
+	public ${ClassName} get(${ClassName} ${className}) {
+		<#if table.childList?size gt 0>
+		${ClassName} entity = super.get(${className});
+		if (entity != null){
+			<#list table.childList as c>
+			entity.set${c.className?cap_first}List(${c.className?uncap_first}Dao.findList(new ${c.className?cap_first}(entity)));
+			</#list>
+		}
+		return entity;
+		<#else>
+		return super.get(${className});
+		</#if>
+	}
+	
+	/**
+	 * 查询列表数据
+	 * @param ${className}
+	 * @return
+	 */
+	public List<${ClassName}> findList(${ClassName} ${className}) {
+		return super.findList(${className});
+	}
+	
+	/**
+	 * 查询分页数据
+	 * @param page 分页对象
+	 * @param ${className}
+	 * @return
+	 */
+	public Page<${ClassName}> findPage(Page<${ClassName}> page, ${ClassName} ${className}) {
+		return super.findPage(page, ${className});
+	}
+	
+	/**
+	 * 保存数据（插入或更新）
+	 * @param ${className}
+	 */
+	@Transactional(readOnly = false)
+	public void save(${ClassName} ${className}) {
+		super.save(${className});
+	<#list table.childList as c>
+		for (${c.className?cap_first} ${c.className?uncap_first} : ${className}.get${c.className?cap_first}List()){
+			if (!${c.className?cap_first}.STATUS_DELETE.equals(${c.className?uncap_first}.getStatus())){
+				${c.className?uncap_first}.set${ClassName}(${className});
+				if (${c.className?uncap_first}.getIsNewRecord()){
+					${c.className?uncap_first}.preInsert();
+					${c.className?uncap_first}Dao.insert(${c.className?uncap_first});
+				}else{
+					${c.className?uncap_first}.preUpdate();
+					${c.className?uncap_first}Dao.update(${c.className?uncap_first});
+				}
+			}else{
+				${c.className?uncap_first}Dao.delete(${c.className?uncap_first});
+			}
+		}
+	</#list>
+	}
+	
+	/**
+	 * 删除数据
+	 * @param ${className}
+	 */
+	@Transactional(readOnly = false)
+	public void delete(${ClassName} ${className}) {
+		super.delete(${className});
+	<#list table.childList as c>
+		${c.className?cap_first} ${c.className?uncap_first} = new ${c.className?cap_first}();
+		${c.className?uncap_first}.set${ClassName}(${className});
+		${c.className?uncap_first}.preUpdate();
+		${c.className?uncap_first}Dao.delete(${c.className?uncap_first});
+	</#list>
+	}
+	
+}]]>
+	</content>
+</template>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>viewList</name>
+	<filePath>src/main/webapp/WEB-INF/views/${lastPackageName}/${moduleName}/${subModuleName}</filePath>
+	<fileName>${className}List.jsp</fileName>
+	<content><![CDATA[<#ftl>
+<%@ page contentType="text/html;charset=UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ include file="/WEB-INF/views/include/taglib.jsp"%>
+<c:set var="extLibs" value="grid"/>
+<sys:header title="${functionNameSimple}管理" extLibs="${"$"}{extLibs}" />
+<div class="portlet box ${"$"}{boxStyleColor}">
+	<div class="portlet-title">
+		<div class="caption"><i class="fa fa-coffee"></i> ${functionNameSimple}管理</div>
+		<div class="actions">
+			<a href="#" class="btn btn-default btn-sm" id="btnSearch" title="查询"><i class="fa fa-search"></i> 查询</a>
+			<shiro:hasPermission name="${permissionPrefix}:edit">
+				<a href="${"$"}{ctx}/${urlPrefix}/form" class="btn btn-default btn-sm btnTool" title="新增${functionNameSimple}"><i class="fa fa-plus"></i> 新增</a>
+			</shiro:hasPermission>
+		</div>
+	</div>
+	<div class="portlet-body list">
+		<#include "/modules/gen/include/searchForm.html">
+
+		<table id="dataGrid"></table>
+		<div id="dataGridPage"></div>
+	</div>
+</div>
+<sys:footer extLibs="${"$"}{extLibs}" />
+<script type="text/javascript">
+	// 初始化DataGrid对象
+	$("#dataGrid").dataGrid({
+		
+		searchForm: $("#searchForm"), // 数据来源表单
+		tabPageId: '${"$"}{param.tabPageId}',// 当前页签编号
+		
+		// 设置数据表格列
+		columnModel: [
+			<#assign firstListField = true>
+			<#list table.columnList as c>
+				<#if c.isList?? && c.isList == "1">
+					<#if firstListField>
+			{header:'${c.comments}', name:'${c.javaFieldId}', index:'a.${c.columnName}', width:200, align:"left", frozen:true, formatter: function(val, obj, row, act){
+				return '<a href="${"$"}{ctx}/${urlPrefix}/form?<#assign pkWhere><#list table.pkList as pk>&${pk.javaFieldId}='+row.${pk.javaFieldId}+'</#list></#assign>${pkWhere?substring(pkWhere?index_of("&")+1)}" class="btnList" data-title="编辑${functionNameSimple}">'+(val ? val : row.${pkField})+'</a>';
+			}},
+					<#elseif c.showType == "select" || c.showType == "checkbox" || c.showType == "radiobox">
+			{header:'${c.comments}', name:'${c.javaFieldId}', index:'a.${c.columnName}', width:200, align:"center", formatter: function(val, obj, row, act){
+				return getDictLabel(${"$"}{fns:getDictListJson('${c.dictType}')}, val, '未知', true);
+			}},
+					<#elseif c.showType == "userselect" || c.showType == "officeselect" || c.showType == "areaselect">
+			{header:'${c.comments}', name:'${c.javaFieldName}', index:'a.${c.columnName}', width:200, align:"center"},
+					<#else>
+			{header:'${c.comments}', name:'${c.javaFieldId}', index:'a.${c.columnName}', width:200, align:"left"},
+					</#if>
+					<#assign firstListField = false>
+				</#if>
+			</#list>
+			{header:'操作', name:'actions', width:100, fixed:true, sortable:false, formatter: function(val, obj, row, act){
+				var actions = [];//<shiro:hasPermission name="${permissionPrefix}:edit">
+				if (row.status == Global.STATUS_NORMAL){
+					actions.push('<a href="${"$"}{ctx}/${urlPrefix}/form?<#assign pkWhere><#list table.pkList as pk>&${pk.javaFieldId}='+row.${pk.javaFieldId}+'</#list></#assign>${pkWhere?substring(pkWhere?index_of("&")+1)}" class="btnList" title="编辑${functionNameSimple}"><i class="fa fa-pencil"></i></a>&nbsp;');
+					actions.push('<a href="${"$"}{ctx}/${urlPrefix}/delete?<#assign pkWhere><#list table.pkList as pk>&${pk.javaFieldId}='+row.${pk.javaFieldId}+'</#list></#assign>${pkWhere?substring(pkWhere?index_of("&")+1)}" class="btnList" title="删除该${functionNameSimple}" data-confirm="确认要删除该${functionNameSimple}吗？"><i class="fa fa-trash-o"></i></a>&nbsp;');
+				}//</shiro:hasPermission>
+				return actions.join('');
+			}}
+		],
+		ajaxSuccess: function(data){ // 加载成功后执行方法
+			
+		}
+	});
+</script>]]>
+	</content>
+</template>

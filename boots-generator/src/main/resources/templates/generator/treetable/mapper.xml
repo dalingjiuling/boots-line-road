@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>mapper</name>
+	<filePath>src/main/resources/mappings/${lastPackageName}/${moduleName}/${subModuleName}</filePath>
+	<fileName>${ClassName}Dao.xml</fileName>
+	<content><![CDATA[<#ftl>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${packageName}.${moduleName}.dao<#if subModuleName != "">.${subModuleName}</#if>.${ClassName}Dao">
+	
+	<!-- 输出字段列 -->
+	<sql id="${className}Columns">
+		<#assign columnField>
+			<#list table.columnList as c>
+				<#if c.javaFieldId == 'parent.id'>
+		a.${c.columnName} AS "parentCode",
+				<#else>
+		a.${c.columnName} AS "${c.javaFieldId}",
+				</#if>
+			</#list>
+			<#list table.columnList as c>
+				<#if c.showType?? && c.showType == "userselect">
+					<#list c.javaFieldAttrs as a>
+		u${c_index + 1}.${a[1]} AS "${c.simpleJavaField}.${a[0]}",
+					</#list>
+				<#elseif c.showType?? && c.showType == "officeselect">
+					<#list c.javaFieldAttrs as a>
+		o${c_index + 1}.${a[1]} AS "${c.simpleJavaField}.${a[0]}",
+					</#list>
+				<#elseif c.showType?? && c.showType == "areaselect">
+					<#list c.javaFieldAttrs as a>
+		a${c_index + 1}.${a[1]} AS "${c.simpleJavaField}.${a[0]}",
+					</#list>
+				</#if>
+				<#-- 父表关联字段 -->
+				<#if table.parentExists && table.parentTableFkName == c.columnName>
+					<#list c.javaFieldAttrs as a>
+<!-- 		b.${a[1]} AS "${c.simpleJavaField}.${a[0]}", -->
+					</#list>
+				</#if>
+			</#list>
+		</#assign>
+${columnField?substring(0, columnField?last_index_of(","))}
+	</sql>
+	
+	<!-- 输出字段关联表 -->
+	<sql id="${className}Joins">
+		<#-- 关联父表 -->
+		<#if table.parentExists>
+<!-- 		LEFT JOIN ${table.parent.tableName} b ON b.id = a.${table.parentTableFkName} -->
+		</#if>
+		<#-- 关联系统表 -->
+		<#list table.columnList as c>
+			<#if c.showType?? && c.showType == "userselect">
+		LEFT JOIN sys_user u${c_index + 1} ON u${c_index + 1}.user_code = a.${c.columnName}
+			<#elseif c.showType?? && c.showType == "officeselect">
+		LEFT JOIN sys_office o${c_index + 1} ON o${c_index + 1}.office_code = a.${c.columnName}
+			<#elseif c.showType?? && c.showType == "areaselect">
+		LEFT JOIN sys_area a${c_index + 1} ON a${c_index + 1}.area_code = a.${c.columnName}
+			</#if>
+		</#list>
+	</sql>
+	
+	<!-- 获取单条数据 -->
+	<select id="get" resultType="${ClassName}">
+		SELECT 
+			<include refid="${className}Columns"/>
+		FROM ${table.tableName} a
+		<include refid="${className}Joins"/>
+		WHERE<#assign pkWhere><#list table.pkList as pk>
+			AND a.${pk.columnName} = ${"#"}{${pk.javaFieldId}}</#list></#assign>${pkWhere?substring(pkWhere?index_of("AND")+3)}
+	</select>
+	
+	<!-- 查询数据列表 -->
+	<select id="findList" resultType="${ClassName}">
+		SELECT 
+			<include refid="${className}Columns"/>
+		FROM ${table.tableName} a
+		<include refid="${className}Joins"/>
+		<where>
+			<#if table.statusExists>
+			a.status != ${"#"}{STATUS_DELETE}
+			<if test="status != null and status != ''">
+				AND a.status = ${"#"}{status}
+			</if>
+			</#if>
+			<if test="parentCode != null and parentCode != ''">
+				AND a.parent_code = ${"#"}{parentCode}
+			</if>
+			<if test="parentCodes != null and parentCodes != ''">
+				AND (a.parent_codes LIKE ${"#"}{parentCodes}
+					<if test="${pkField} != null and ${pkField} != ''">
+						OR <#assign pkcn><#list table.pkList as pk>a.${pk.columnName}</#list></#assign>${pkcn} = ${"#"}{${pkField}}
+					</if>)
+			</if>
+			<#list table.columnList as c>
+				<#if c.isQuery?? && c.isQuery == "1">
+					<#if c.queryType ?? && c.queryType == 'between'>
+			<if test="begin${c.simpleJavaField?cap_first} != null and end${c.simpleJavaField?cap_first} != null <#if c.simpleJavaField != c.javaFieldId>and begin${c.javaFieldId?cap_first} != null and end${c.javaFieldId?cap_first} != null </#if>">
+					<#else>
+			<if test="${c.simpleJavaField} != null<#if c.simpleJavaField != c.javaFieldId> and ${c.javaFieldId} != null</#if> <#if c.javaType == 'String' || c.javaType == 'cn.net.ecode.modules.sys.entity.User' || c.javaType == 'cn.net.ecode.modules.sys.entity.Office' || c.javaType == 'cn.net.ecode.modules.sys.entity.Area'>and ${c.javaFieldId} != ''</#if>">
+					</#if>
+					<#if c.queryType ?? && c.queryType == 'between'>
+				AND a.${c.columnName} BETWEEN ${"#"}{begin${c.simpleJavaField?cap_first}} AND ${"#"}{end${c.simpleJavaField?cap_first}}
+					<#elseif c.queryType ?? && c.queryType == 'all_like'>
+				AND a.${c.columnName} LIKE 
+					<if test="dbName == 'oracle'">'%'||${"#"}{${c.javaFieldId}}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+${"#"}{${c.javaFieldId}}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',${"#"}{${c.javaFieldId}},'%')</if>
+					<#elseif c.queryType ?? && c.queryType == 'left_like'>
+				AND a.${c.columnName} LIKE 
+					<if test="dbName == 'oracle'">'%'||${"#"}{${c.javaFieldId}}</if>
+					<if test="dbName == 'mssql'">'%'+${"#"}{${c.javaFieldId}}</if>
+					<if test="dbName == 'mysql'">concat('%',${"#"}{${c.javaFieldId}})</if>
+					<#elseif c.queryType ?? && c.queryType == 'right_like'>
+				AND a.${c.columnName} LIKE 
+					<if test="dbName == 'oracle'">${"#"}{${c.javaFieldId}}||'%'</if>
+					<if test="dbName == 'mssql'">${"#"}{${c.javaFieldId}}+'%'</if>
+					<if test="dbName == 'mysql'">concat(${"#"}{${c.javaFieldId}},'%')</if>
+					<#else>
+				AND a.${c.columnName} ${c.queryType?upper_case} ${"#"}{${c.javaFieldId}}
+					</#if>
+			</if>
+				</#if>
+			</#list>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${"$"}{page.orderBy}
+			</when>
+			<otherwise>
+				<#list table.columnList as c>
+					<#if c.columnName == 'sorts'>
+				ORDER BY a.sorts
+					</#if>
+				</#list>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 查询数据列表（全部数据） -->
+	<select id="findAllList" resultType="${ClassName}">
+		SELECT 
+			<include refid="${className}Columns"/>
+		FROM ${table.tableName} a
+		<include refid="${className}Joins"/>
+		<where>
+			<#if table.statusExists>a.status = ${"#"}{STATUS_NORMAL}</#if>
+		</where>
+		<#list table.columnList as c>
+			<#if c.columnName == 'sorts'>
+		ORDER BY a.sorts
+			</#if>
+		</#list>
+	</select>
+	
+	<!-- 根据父编号模糊查询数据 -->
+	<select id="findByParentCodesLike" resultType="${ClassName}">
+		SELECT
+			<#assign pkcn><#list table.pkList as pk>a.${pk.columnName}</#list></#assign>${pkcn} AS "${pkField}",
+			a.parent_code AS "parentCode",
+			a.parent_codes AS "parentCodes",
+			a.sort_grade AS "sortGrade"
+		FROM ${table.tableName} a
+		WHERE <#if table.statusExists>a.status = ${"#"}{STATUS_NORMAL}</#if>
+			AND a.parent_codes LIKE ${"#"}{parentCodes}
+		<#list table.columnList as c>
+			<#if c.columnName == 'sorts'>
+		ORDER BY a.sorts
+			</#if>
+		</#list>
+	</select>
+	
+	<!-- 插入数据 -->
+	<insert id="insert">
+		INSERT INTO ${table.tableName}(
+		<#assign insertField>
+			<#list table.columnList as c>
+				<#if c.isInsert?? && c.isInsert == "1">
+			${c.columnName},
+				</#if>
+			</#list>
+		</#assign>
+${insertField?substring(0, insertField?last_index_of(","))}
+		) VALUES (
+		<#assign insertJavaField>
+			<#list table.columnList as c>
+				<#if c.isInsert?? && c.isInsert == "1">
+					<#if c.javaFieldId == 'parent.id'>
+			${"#"}{parentCode},
+					<#else>
+			${"#"}{${c.javaFieldId}},
+					</#if>
+				</#if>
+			</#list>
+		</#assign>
+${insertJavaField?substring(0, insertJavaField?last_index_of(","))}
+		)
+	</insert>
+	
+	<!-- 更新数据 -->
+	<update id="update">
+		UPDATE ${table.tableName} SET 	
+			<#assign updateField>		
+				<#list table.columnList as c>
+					<#if c.isUpdate?? && c.isUpdate == "1">
+						<#if c.javaFieldId == 'parent.id'>
+			${c.columnName} = ${"#"}{parentCode},
+						<#else>
+			${c.columnName} = ${"#"}{${c.javaFieldId}},
+						</#if>
+					</#if>
+				</#list>
+			</#assign>
+${updateField?substring(0, updateField?last_index_of(","))}
+		WHERE<#assign pkWhere><#list table.pkList as pk>
+			AND ${pk.columnName} = ${"#"}{${pk.javaFieldId}}</#list></#assign>${pkWhere?substring(pkWhere?index_of("AND")+3)}
+	</update>
+	
+	<!-- <#if table.statusExists>逻辑<#else>物理</#if>删除数据 -->
+	<update id="delete">
+	<#if table.statusExists>
+		UPDATE ${table.tableName} SET 
+			<#if table.updateDateExists>
+			update_by = ${"#"}{updateBy.userCode},
+			update_date = ${"#"}{updateDate},
+			</#if>
+			status = ${"#"}{STATUS_DELETE}
+	<#else>
+		DELETE FROM ${table.tableName}
+	</#if>
+		WHERE <#assign pkWhere><#list table.pkList as pk>
+			AND ${pk.columnName} = ${"#"}{${pk.javaFieldId}}</#list></#assign>${pkWhere?substring(pkWhere?index_of("AND")+3)}
+			OR parent_codes LIKE
+				<if test="dbName == 'oracle'">'%,'||${"#"}{${pkField}}||',%'</if>
+				<if test="dbName == 'mssql'">'%,'+${"#"}{${pkField}}+',%'</if>
+				<if test="dbName == 'mysql'">concat('%,',${"#"}{${pkField}},',%')</if>
+	</update>
+	
+	<!-- 更新所有父编号 -->
+	<update id="updateParentCodes">
+		UPDATE ${table.tableName} a SET 
+			parent_code = ${"#"}{parentCode}, 
+			parent_codes = ${"#"}{parentCodes},
+			sort_grade = ${"#"}{sortGrade}
+		WHERE <#assign pkcn><#list table.pkList as pk>a.${pk.columnName}</#list></#assign>${pkcn} = ${"#"}{${pkField}}
+	</update>
+	
+	<!-- 更新是否有下级字段 -->
+	<update id="updateHasnext">
+		UPDATE ${table.tableName} SET 
+			hasnext = (
+				SELECT (case when count(1) &gt; 0 then '1' else '0' end) hasnext
+				FROM (SELECT parent_code FROM ${table.tableName} WHERE status = '0') b
+				WHERE b.parent_code = <#list table.pkList as pk>${"#"}{${pk.javaFieldId}}<#break></#list><#--树结构只能有一个主键-->
+			)
+		WHERE<#assign pkWhere><#list table.pkList as pk>
+			AND ${pk.columnName} = ${"#"}{${pk.javaFieldId}}</#list></#assign>${pkWhere?substring(pkWhere?index_of("AND")+3)}
+	</update>
+	
+	<!-- 获取启用的数据列表 -->
+	<select id="getEnabledList" resultType="${ClassName}">
+		SELECT
+			<include refid="${className}Columns"/>
+		FROM  ${table.tableName} a
+		<include refid="${className}Joins"/>
+		WHERE a.status = ${"#"}{STATUS_NORMAL} 
+			AND a.parent_codes LIKE 
+				<if test="dbName == 'oracle'">'%,'||${"#"}{${pkField}}||',%'</if>
+				<if test="dbName == 'mssql'">'%,'+${"#"}{${pkField}}+',%'</if>
+				<if test="dbName == 'mysql'">concat('%,',${"#"}{${pkField}},',%')</if>
+		ORDER BY  <#assign orderBy><#list table.pkList as pk>a.${pk.columnName}</#list></#assign>${orderBy}<#list table.columnList as c><#if c.columnName == 'sorts'>,a.sorts  </#if></#list>
+	</select>
+		
+	<!-- 停用数据  -->
+	<update id="disable">
+		UPDATE ${table.tableName} a SET 
+			status = ${"#"}{STATUS_DISABLE}
+		WHERE <#assign pkcn><#list table.pkList as pk>a.${pk.columnName}</#list></#assign>${pkcn} = ${"#"}{${pkField}}
+	</update>
+	
+	<!-- 停用数据及子节点数据  -->
+	<update id="disableByGroup">
+		UPDATE ${table.tableName} a SET 
+			status = ${"#"}{STATUS_DISABLE}
+		WHERE status = ${"#"}{STATUS_NORMAL} 
+			AND (<#assign pkcn><#list table.pkList as pk>a.${pk.columnName}</#list></#assign>${pkcn} = ${"#"}{${pkField}} OR parent_codes LIKE 
+				<if test="dbName == 'oracle'">'%,'||${"#"}{${pkField}}||',%'</if>
+				<if test="dbName == 'mssql'">'%,'+${"#"}{${pkField}}+',%'</if>
+				<if test="dbName == 'mysql'">concat('%,',${"#"}{${pkField}},',%')</if>)
+	</update>
+	
+	<!-- 启用数据  -->
+	<update id="enable">
+		UPDATE ${table.tableName} a SET 
+			status = ${"#"}{STATUS_NORMAL}
+		WHERE <#assign pkcn><#list table.pkList as pk>a.${pk.columnName}</#list></#assign>${pkcn} = ${"#"}{${pkField}}
+	</update>
+	
+	<!-- 启用数据及子节点数据  -->
+	<update id="enableByGroup">
+		UPDATE ${table.tableName} a SET 
+			status = ${"#"}{STATUS_NORMAL}
+		WHERE status = ${"#"}{STATUS_DISABLE} 
+			AND (<#assign pkcn><#list table.pkList as pk>a.${pk.columnName}</#list></#assign>${pkcn} = ${"#"}{${pkField}} OR parent_codes LIKE
+				<if test="dbName == 'oracle'">'%,'||${"#"}{${pkField}}||',%'</if>
+				<if test="dbName == 'mssql'">'%,'+${"#"}{${pkField}}+',%'</if>
+				<if test="dbName == 'mysql'">concat('%,',${"#"}{${pkField}},',%')</if>)
+	</update>
+	
+	<!-- 获取子节点中最大的排序号  -->
+	<#list table.columnList as c><#if c.columnName == 'sorts'>
+	<select id="getMaxSort" resultType="int">
+		SELECT 
+			<if test="dbName == 'oracle'">nvl</if>
+			<if test="dbName == 'mssql'">isnull</if>
+			<if test="dbName == 'mysql'">ifnull</if>
+			(max(a.sorts),0) sorts
+		FROM ${table.tableName} a
+		WHERE a.status != ${"#"}{STATUS_DELETE}
+			AND a.parent_code = ${"#"}{parentCode}
+	</select>
+	</#if></#list>
+
+	<!-- 获取子节点最大个数  -->
+	<select id="getMaxSize" resultType="int">
+		SELECT count(1) 
+		FROM ${table.tableName} t 
+		WHERE t.parent_code= ${"#"}{parentCode}
+	</select>
+	
+</mapper>]]>
+	</content>
+</template>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>viewForm</name>
+	<filePath>src/main/webapp/WEB-INF/views/${lastPackageName}/${moduleName}/${subModuleName}</filePath>
+	<fileName>${className}Form.jsp</fileName>
+	<content><![CDATA[<#ftl>
+<%@ page contentType="text/html;charset=UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ include file="/WEB-INF/views/include/taglib.jsp"%>
+<c:set var="extLibs" value="validate"/>
+<sys:header title="${functionNameSimple}管理 - ${"$"}{${className}.isNewRecord ? '新增' : '编辑'}${functionNameSimple}" extLibs="${"$"}{extLibs}"/>
+<div class="portlet box ${"$"}{boxStyleColor} autoHeight">
+	<div class="portlet-title">
+		<div class="caption"><i class="fa fa-coffee"></i>${"$"}{${className}.isNewRecord ? '新增' : '编辑'}${functionNameSimple}</div>
+	</div>
+	<div class="portlet-body form">
+		<form:form id="inputForm" modelAttribute="${className}" action="${"$"}{ctx}/${urlPrefix}/save" method="post" class="form-horizontal">
+			<form:hidden path="isNewRecord"/>
+			<div class="form-body">
+				<h4 class="form-section">基本信息</h4>
+		<#list table.columnList as c>
+			<#if c.simpleJavaField == 'parent' || c.simpleJavaField == 'parentCode'>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4">上级${functionNameSimple}：</label>
+							<div class="col-sm-8">
+								<sys:treeselect id="${c.simpleJavaField}" name="${c.javaFieldId}" value="${'$'}{${className}.${c.javaFieldId}}" labelName="${c.javaFieldName}" labelValue="${"$"}{${className}.${c.javaFieldName}}" 
+									title="${c.comments}" url="/${urlPrefix}/treeData" extCode="${'$'}{${className}.${pkField}}" cssClass="form-control" allowClear="true"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</#if>
+		</#list>
+		<#assign rowFlag = 0/>
+		<#list table.columnList as c>
+		<#if c.simpleJavaField == 'parent' || c.simpleJavaField == 'parentCode' || c.simpleJavaField == 'parentCodes'>
+		<#elseif c.isEdit?? && c.isEdit == "1">
+				<#if c.showType == "hidden">
+				<form:hidden path="${c.javaFieldId}"/>
+				<#else>
+					<#-- 输出行开始标记  -->
+					<#if rowFlag == 0>
+						<#assign rowFlag = 1/>
+				<div class="row">
+					</#if>
+					<#-- 输出单元格  -->
+					<div class="col-xs-<#if c.showType == "textarea">12<#else>6</#if>">
+						<div class="form-group">
+							<label class="control-label col-sm-<#if c.showType == "textarea">2<#else>4</#if>" title="">
+								<#if c.isNull != "1"><span class="required">*</span> </#if>${c.comments}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-<#if c.showType == "textarea">10<#else>8</#if>">
+							<#-- 输出单元格内容  -->
+							<#if c.showType == "input">
+								<#-- 如果为自定义主键，则第一个pk字段需输出isNewRecord
+								<#if c.isPk == "1" && table.pkList[0]?? && table.pkList[0].columnName == c.columnName>
+								<form:hidden path="isNewRecord"/>
+								</#if> -->
+								<form:input path="${c.javaFieldId}" htmlEscape="false"<#if c.dataLength != "0"> maxlength="${c.dataLength}"</#if><#if c.isPk == "1"> readonly="${"$"}{!${className}.isNewRecord}"</#if> class="form-control<#if c.isNull != "1"> required</#if><#if c.javaType == "Long" || c.javaType == "Integer"> digits</#if><#if c.javaType == "Double"> number</#if>"/>
+							<#elseif c.showType == "textarea">
+								<form:textarea path="${c.javaFieldId}" htmlEscape="false" rows="4"<#if c.dataLength != "0"> maxlength="${c.dataLength}"</#if> class="form-control<#if c.isNull != "1"> required</#if>"/>
+							<#elseif c.showType == "select">
+								<form:select path="${c.javaFieldId}" class="form-control<#if c.isNull != "1"> required</#if>">
+									<form:option value="" label=""/>
+									<form:options items="${"$"}{fns:getDictList('${c.dictType}')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+								</form:select>
+							<#elseif c.showType == "checkbox">
+								<div class="checkbox-list">
+									<c:forEach items="${"$"}{fns:getDictList('${c.dictType}')}" var="dict" varStatus="status">
+										<span><input id="${c.javaFieldId}${"$"}{status.index}" name="${c.javaFieldId}" class="form-control" type="checkbox" value="${"$"}{dict.value}" ${"$"}{fn:contains(fn:replace(',1,', '1', 
+											${className}.${c.javaFieldId}), fn:replace(',1,', '1', dict.value)) ? 'checked="checked"' : ''}/><label for="${c.javaFieldId}${"$"}{status.index}">${"$"}{dict.name}</label></span>
+									</c:forEach>
+									<input type="hidden" name="_${c.javaFieldId}" value="on"/>
+								</div>
+							<#elseif c.showType == "radiobox">
+								<div class="radio-list">
+									<form:radiobuttons path="${c.javaFieldId}" items="${"$"}{fns:getDictList('${c.dictType}')}" itemLabel="label" itemValue="value" htmlEscape="false" class="form-control<#if c.isNull != "1"> required</#if>"/>
+								</div>
+							<#elseif c.showType == "dateselect">
+								<input name="${c.javaFieldId}" type="text" readonly="readonly" maxlength="20" class="form-control Wdate <#if c.isNull != "1">required</#if>"
+									value="<fmt:formatDate value="${"$"}{${className}.${c.javaFieldId}}" pattern="yyyy-MM-dd HH:mm"/>"
+									onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+							<#elseif c.showType == "userselect">
+								<sys:treeselect id="${c.simpleJavaField}" name="${c.javaFieldId}" value="${"$"}{${className}.${c.javaFieldId}}" labelName="${c.javaFieldName}" labelValue="${"$"}{${className}.${c.javaFieldName}}"
+									title="用户" url="/sys/office/treeData?type=3" cssClass="<#if c.isNull != "1">required</#if>" allowClear="true" notAllowSelectParent="true"/>
+							<#elseif c.showType == "officeselect">
+								<sys:treeselect id="${c.simpleJavaField}" name="${c.javaFieldId}" value="${"$"}{${className}.${c.javaFieldId}}" labelName="${c.javaFieldName}" labelValue="${"$"}{${className}.${c.javaFieldName}}"
+									title="部门" url="/sys/office/treeData?type=2" cssClass="<#if c.isNull != "1">required</#if>" allowClear="true" notAllowSelectParent="true"/>
+							<#elseif c.showType == "areaselect">
+								<sys:treeselect id="${c.simpleJavaField}" name="${c.javaFieldId}" value="${"$"}{${className}.${c.javaFieldId}}" labelName="${c.javaFieldName}" labelValue="${"$"}{${className}.${c.javaFieldName}}"
+									title="区域" url="/sys/area/treeData" cssClass="<#if c.isNull != "1">required</#if>" allowClear="true" notAllowSelectParent="true"/>
+							<#elseif c.showType == "fileselect">
+								<sys:fileupload id="${c.simpleJavaField}" bizCategory="${c.simpleJavaField}" bizKey="${"$"}{${className}.${c.javaFieldId}}" readonly="false" returnPath="true"/>
+							</#if>
+								<#-- <span class="help-block">&nbsp;</span>  -->
+							<#-- 输出单元格内容 END  -->
+							</div>
+						</div>
+					</div>
+					<#-- 输出单元格 END  -->
+					<#-- 输出行结束标记，两栏  -->
+					<#if rowFlag == 2>
+						<#assign rowFlag = -1/>
+				</div>
+					</#if>
+					<#assign rowFlag = rowFlag + 1 />
+				</#if><#-- 判断隐藏类型  END -->
+			</#if><#-- 判断是否编辑  END -->
+		</#list>
+		<#-- 如果没有生成行结束标记，则在最后输出 -->
+		<#if rowFlag != 0>
+				</div>
+		</#if>
+			</div>
+			<div class="form-actions fluid">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<shiro:hasPermission name="${permissionPrefix}:edit">
+							<button id="btnSubmit" type="submit" class="btn btn-primary"><i class="fa fa-check"></i> 保 存</button>&nbsp;
+						</shiro:hasPermission>
+						<button id="btnCancel" type="button" class="btn default" onclick="closeCurrentTabPage('${"$"}{param.parentTabPageId}')"><i class="fa fa-reply-all"></i> 关 闭</button>
+					</div>
+				</div>
+			</div>
+		</form:form>
+	</div>
+</div>
+<sys:footer extLibs="${"$"}{extLibs}"/>
+<script type="text/javascript">
+	$("#inputForm").validate({
+		submitHandler: function(form){
+			ajaxSubmitForm($(form), function(data){
+				showMessage(data.message);
+				if(data.result == Global.TRUE){
+					closeCurrentTabPage('${"$"}{param.parentTabPageId}', function(contents, contentWindow){
+						//contentWindow.dataGrid.refreshTree(1, ${"$"}('${"#"}parentCode').val());
+						contentWindow.${"$"}('#dataGrid').dataGrid('refreshTreeChildren',
+								${"$"}('${"#"}parentCode').val(), ${"$"}{${className}.isNewRecord});
+					});
+				}
+			}, "json");
+	    }
+	});
+</script>]]>
+	</content>
+</template>

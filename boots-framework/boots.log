@@ -1,0 +1,54 @@
+2019-03-12 18:21:47,554 INFO  BootsFrameworkApplication:50 -Starting BootsFrameworkApplication on EXNBIY4SUYEIOA1 with PID 11208 (D:\Work\git_work\boots\boots-framework\target\classes started by Administrator in D:\Work\git_work\boots\boots-framework)
+2019-03-12 18:21:47,582 DEBUG BootsFrameworkApplication:53 -Running with Spring Boot v2.0.1.RELEASE, Spring v5.0.5.RELEASE
+2019-03-12 18:21:47,583 INFO  BootsFrameworkApplication:663 -The following profiles are active: multi-dev
+2019-03-12 18:21:51,433 DEBUG ClassPathMapperScanner:437 -Identified candidate component class: file [D:\Work\git_work\boots\boots-framework\target\classes\com\line\road\modules\system\dao\IUserDao.class]
+2019-03-12 18:21:51,435 DEBUG ClassPathMapperScanner:437 -Identified candidate component class: file [D:\Work\git_work\boots\boots-framework\target\classes\com\line\road\modules\system\dao\SysMenuDao.class]
+2019-03-12 18:21:51,443 DEBUG ClassPathMapperScanner:180 -Creating MapperFactoryBean with name 'IUserDao' and 'com.line.road.modules.system.dao.IUserDao' mapperInterface
+2019-03-12 18:21:51,447 DEBUG ClassPathMapperScanner:180 -Creating MapperFactoryBean with name 'sysMenuDao' and 'com.line.road.modules.system.dao.SysMenuDao' mapperInterface
+2019-03-12 18:21:51,463 DEBUG ClassPathMapperScanner:437 -Identified candidate component class: file [D:\Work\git_work\boots\boots-framework\target\classes\com\line\road\external\test\dao\ISecUserDao.class]
+2019-03-12 18:21:51,464 DEBUG ClassPathMapperScanner:180 -Creating MapperFactoryBean with name 'ISecUserDao' and 'com.line.road.external.test.dao.ISecUserDao' mapperInterface
+2019-03-12 18:21:52,106 WARN  ClassPathMapperScanner:146 -No MyBatis mapper was found in '[com.line.road]' package. Please check your configuration.
+2019-03-12 18:22:03,548 DEBUG TraversableResolvers:70 -Found javax.persistence.Persistence on classpath, but no method 'getPersistenceUtil'. Assuming JPA 1 environment. All properties will per default be traversable.
+2019-03-12 18:22:03,553 DEBUG ResourceBundleMessageInterpolator:89 -Loaded expression factory via original TCCL
+2019-03-12 18:22:03,575 DEBUG TraversableResolvers:70 -Found javax.persistence.Persistence on classpath, but no method 'getPersistenceUtil'. Assuming JPA 1 environment. All properties will per default be traversable.
+2019-03-12 18:22:03,578 DEBUG ConfigurationImpl:148 -Setting custom MessageInterpolator of type org.springframework.validation.beanvalidation.LocaleContextMessageInterpolator
+2019-03-12 18:22:03,581 DEBUG ConfigurationImpl:180 -Setting custom ConstraintValidatorFactory of type org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory
+2019-03-12 18:22:03,583 DEBUG ConfigurationImpl:194 -Setting custom ParameterNameProvider of type org.springframework.validation.beanvalidation.LocalValidatorFactoryBean$1
+2019-03-12 18:22:03,586 DEBUG ValidationXmlParser:133 -Trying to load META-INF/validation.xml for XML based Validator configuration.
+2019-03-12 18:22:03,587 DEBUG ResourceLoaderHelper:53 -Trying to load META-INF/validation.xml via user class loader
+2019-03-12 18:22:03,588 DEBUG ResourceLoaderHelper:60 -Trying to load META-INF/validation.xml via TCCL
+2019-03-12 18:22:03,589 DEBUG ResourceLoaderHelper:66 -Trying to load META-INF/validation.xml via Hibernate Validator's class loader
+2019-03-12 18:22:03,590 DEBUG ValidationXmlParser:140 -No META-INF/validation.xml found. Using annotation based configuration only.
+2019-03-12 18:22:03,610 DEBUG ValidatorFactoryImpl:578 -HV000234: Using org.springframework.validation.beanvalidation.LocaleContextMessageInterpolator as ValidatorFactory-scoped message interpolator.
+2019-03-12 18:22:03,619 DEBUG ValidatorFactoryImpl:579 -HV000234: Using org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver as ValidatorFactory-scoped traversable resolver.
+2019-03-12 18:22:03,621 DEBUG ValidatorFactoryImpl:580 -HV000234: Using org.hibernate.validator.internal.util.ExecutableParameterNameProvider as ValidatorFactory-scoped parameter name provider.
+2019-03-12 18:22:03,622 DEBUG ValidatorFactoryImpl:581 -HV000234: Using org.hibernate.validator.internal.engine.DefaultClockProvider as ValidatorFactory-scoped clock provider.
+2019-03-12 18:22:03,623 DEBUG ValidatorFactoryImpl:582 -HV000234: Using org.hibernate.validator.internal.engine.scripting.DefaultScriptEvaluatorFactory as ValidatorFactory-scoped script evaluator factory.
+2019-03-12 18:22:09,294 INFO  BootsFrameworkApplication:59 -Started BootsFrameworkApplication in 23.48 seconds (JVM running for 29.559)
+2019-03-12 18:35:09,564 INFO  BootsFrameworkApplication:50 -Starting BootsFrameworkApplication on EXNBIY4SUYEIOA1 with PID 11208 (D:\Work\git_work\boots\boots-framework\target\classes started by Administrator in D:\Work\git_work\boots\boots-framework)
+2019-03-12 18:35:09,564 DEBUG BootsFrameworkApplication:53 -Running with Spring Boot v2.0.1.RELEASE, Spring v5.0.5.RELEASE
+2019-03-12 18:35:09,565 INFO  BootsFrameworkApplication:663 -The following profiles are active: multi-dev
+2019-03-12 18:35:11,058 DEBUG ClassPathMapperScanner:437 -Identified candidate component class: file [D:\Work\git_work\boots\boots-framework\target\classes\com\line\road\modules\system\dao\IUserDao.class]
+2019-03-12 18:35:11,059 DEBUG ClassPathMapperScanner:437 -Identified candidate component class: file [D:\Work\git_work\boots\boots-framework\target\classes\com\line\road\modules\system\dao\SysMenuDao.class]
+2019-03-12 18:35:11,091 DEBUG ClassPathMapperScanner:180 -Creating MapperFactoryBean with name 'IUserDao' and 'com.line.road.modules.system.dao.IUserDao' mapperInterface
+2019-03-12 18:35:11,092 DEBUG ClassPathMapperScanner:180 -Creating MapperFactoryBean with name 'sysMenuDao' and 'com.line.road.modules.system.dao.SysMenuDao' mapperInterface
+2019-03-12 18:35:11,112 DEBUG ClassPathMapperScanner:437 -Identified candidate component class: file [D:\Work\git_work\boots\boots-framework\target\classes\com\line\road\external\test\dao\ISecUserDao.class]
+2019-03-12 18:35:11,114 DEBUG ClassPathMapperScanner:180 -Creating MapperFactoryBean with name 'ISecUserDao' and 'com.line.road.external.test.dao.ISecUserDao' mapperInterface
+2019-03-12 18:35:11,345 WARN  ClassPathMapperScanner:146 -No MyBatis mapper was found in '[com.line.road]' package. Please check your configuration.
+2019-03-12 18:35:13,990 DEBUG TraversableResolvers:70 -Found javax.persistence.Persistence on classpath, but no method 'getPersistenceUtil'. Assuming JPA 1 environment. All properties will per default be traversable.
+2019-03-12 18:35:13,992 DEBUG ResourceBundleMessageInterpolator:89 -Loaded expression factory via original TCCL
+2019-03-12 18:35:13,994 DEBUG TraversableResolvers:70 -Found javax.persistence.Persistence on classpath, but no method 'getPersistenceUtil'. Assuming JPA 1 environment. All properties will per default be traversable.
+2019-03-12 18:35:13,995 DEBUG ConfigurationImpl:148 -Setting custom MessageInterpolator of type org.springframework.validation.beanvalidation.LocaleContextMessageInterpolator
+2019-03-12 18:35:13,995 DEBUG ConfigurationImpl:180 -Setting custom ConstraintValidatorFactory of type org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory
+2019-03-12 18:35:13,996 DEBUG ConfigurationImpl:194 -Setting custom ParameterNameProvider of type org.springframework.validation.beanvalidation.LocalValidatorFactoryBean$1
+2019-03-12 18:35:13,997 DEBUG ValidationXmlParser:133 -Trying to load META-INF/validation.xml for XML based Validator configuration.
+2019-03-12 18:35:13,998 DEBUG ResourceLoaderHelper:53 -Trying to load META-INF/validation.xml via user class loader
+2019-03-12 18:35:13,999 DEBUG ResourceLoaderHelper:60 -Trying to load META-INF/validation.xml via TCCL
+2019-03-12 18:35:14,001 DEBUG ResourceLoaderHelper:66 -Trying to load META-INF/validation.xml via Hibernate Validator's class loader
+2019-03-12 18:35:14,002 DEBUG ValidationXmlParser:140 -No META-INF/validation.xml found. Using annotation based configuration only.
+2019-03-12 18:35:14,014 DEBUG ValidatorFactoryImpl:578 -HV000234: Using org.springframework.validation.beanvalidation.LocaleContextMessageInterpolator as ValidatorFactory-scoped message interpolator.
+2019-03-12 18:35:14,015 DEBUG ValidatorFactoryImpl:579 -HV000234: Using org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver as ValidatorFactory-scoped traversable resolver.
+2019-03-12 18:35:14,016 DEBUG ValidatorFactoryImpl:580 -HV000234: Using org.hibernate.validator.internal.util.ExecutableParameterNameProvider as ValidatorFactory-scoped parameter name provider.
+2019-03-12 18:35:14,017 DEBUG ValidatorFactoryImpl:581 -HV000234: Using org.hibernate.validator.internal.engine.DefaultClockProvider as ValidatorFactory-scoped clock provider.
+2019-03-12 18:35:14,017 DEBUG ValidatorFactoryImpl:582 -HV000234: Using org.hibernate.validator.internal.engine.scripting.DefaultScriptEvaluatorFactory as ValidatorFactory-scoped script evaluator factory.
+2019-03-12 18:35:14,959 INFO  BootsFrameworkApplication:59 -Started BootsFrameworkApplication in 5.708 seconds (JVM running for 815.206)

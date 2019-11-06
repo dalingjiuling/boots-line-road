@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>controller</name>
+	<filePath>src/main/java/${packageName}/${moduleName}/web/${subModuleName}</filePath>
+	<fileName>${ClassName}Controller.java</fileName>
+	<content><![CDATA[<#ftl>
+/**
+ * Copyright &copy; 2013-2016 赵亮亮   All rights reserved.
+ */
+package ${packageName}.${moduleName}.web<#if subModuleName != "">.${subModuleName}</#if>;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import cn.net.ecode.common.persistence.Page;
+import cn.net.ecode.common.web.BaseController;
+import ${packageName}.${moduleName}.entity<#if subModuleName != "">.${subModuleName}</#if>.${ClassName};
+import ${packageName}.${moduleName}.service<#if subModuleName != "">.${subModuleName}</#if>.${ClassName}Service;
+
+/**
+ * ${functionName}Controller
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ */
+@Controller
+@RequestMapping(value = "${r"${adminPath}"}/${urlPrefix}")
+public class ${ClassName}Controller extends BaseController {
+
+	@Autowired
+	private ${ClassName}Service ${className}Service;
+	
+	/**
+	 * 获取数据
+	 */
+	@ModelAttribute
+	public ${ClassName} get(<#assign pkParam><#list table.pkList as pk>${pk.javaType} ${pk.simpleJavaField}, </#list></#assign>${pkParam?substring(0, pkParam?last_index_of(","))}, boolean isNewRecord) {
+		<#if table.pkList?size lte 1>
+		return ${className}Service.get(<#assign pkParam><#list table.pkList as pk>${pk.simpleJavaField}, </#list></#assign>${pkParam?substring(0, pkParam?last_index_of(","))}, isNewRecord);
+		<#else>
+		return ${className}Service.get(new Class<?>[]{<#assign pkParam><#list table.pkList as pk>${pk.javaType}.class, </#list></#assign>${pkParam?substring(0, pkParam?last_index_of(","))}},
+				new Object[]{<#assign pkParam><#list table.pkList as pk>${pk.simpleJavaField}, </#list></#assign>${pkParam?substring(0, pkParam?last_index_of(","))}}, isNewRecord);
+		</#if>
+	}
+	
+	/**
+	 * 查询列表
+	 */
+	@RequiresPermissions("${permissionPrefix}:view")
+	@RequestMapping(value = {"list", ""})
+	public String list(${ClassName} ${className}, Model model) {
+		model.addAttribute("${className}", ${className});
+		return "${lastPackageName}/${viewPrefix}List";
+	}
+	
+	/**
+	 * 查询列表数据
+	 */
+	@RequiresPermissions("${permissionPrefix}:view")
+	@ResponseBody
+	@RequestMapping(value = "listData")
+	public Page<${ClassName}> listData(${ClassName} ${className}, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<${ClassName}> page = ${className}Service.findPage(new Page<${ClassName}>(request, response), ${className}); 
+		return page;
+	}
+
+	/**
+	 * 查看详情
+	 */
+	@RequiresPermissions("${permissionPrefix}:view")
+	@RequestMapping(value = "view")
+	public String view(${ClassName} ${className}, Model model) {
+		model.addAttribute("${className}", ${className});
+		return "${lastPackageName}/${viewPrefix}View";
+	}
+
+}]]>
+	</content>
+</template>

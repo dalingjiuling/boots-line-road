@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>dao</name>
+	<filePath>src/main/java/${packageName}/${moduleName}/dao/${subModuleName}</filePath>
+	<fileName>${ClassName}Dao.java</fileName>
+	<content><![CDATA[<#ftl>
+/**
+ * Copyright &copy; 2013-2016 赵亮亮   All rights reserved.
+ */
+package ${packageName}.${moduleName}.dao<#if subModuleName != "">.${subModuleName}</#if>;
+import java.util.List;
+
+import cn.net.ecode.common.persistence.TreeDao;
+import cn.net.ecode.common.persistence.annotation.MyBatisDao;
+import ${packageName}.${moduleName}.entity<#if subModuleName != "">.${subModuleName}</#if>.${ClassName};
+
+/**
+ * ${functionName}DAO接口
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ */
+@MyBatisDao
+public interface ${ClassName}Dao extends TreeDao<${ClassName}> {
+
+	/**
+	 * 获取当前节点下的启用节点列表
+	 * @param ${className}
+	 * @return
+	 */
+	public List<${ClassName}> getEnabledList(${ClassName} ${className});
+
+	/**
+	 * 停用当前节点
+	 * @param ${className}
+	 * @return
+	 */
+	public int disable(${ClassName} ${className});
+
+	/**
+	 * 停用当前节点和子节点
+	 * @param ${className}
+	 * @return
+	 */
+	public int disableByGroup(${ClassName} ${className});
+
+	/**
+	 * 启用当前节点
+	 * @param ${className}
+	 * @return
+	 */
+	public int enable(${ClassName} ${className});
+
+	/**
+	 * 启用当前节点和子节点
+	 * @param ${className}
+	 * @return
+	 */
+	public int enableByGroup(${ClassName} ${className});
+	
+	<#list table.columnList as c><#if c.columnName == 'sorts'>
+	/** 
+	 * 获取子节点中最大的排序号
+	 * @param ${className}
+	 * @return int  
+	 */
+	public int getMaxSort(${ClassName} ${className});
+	</#if></#list>
+	
+	/** 
+	 * 获取子节点最大的个数
+	 * @param ${className}
+	 * @return int  
+	 */
+	public int getMaxSize(${ClassName} ${className});
+	
+}]]>
+	</content>
+</template>
